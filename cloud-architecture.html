@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Architecture | AI Student Help Desk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            padding: 22px 15px;
+            background: linear-gradient(180deg, #111827, #172554);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .logo-text h2 {
+            font-size: 17px;
+        }
+
+        .logo-text p {
+            margin-top: 3px;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .menu {
+            margin-top: 25px;
+        }
+
+        .menu-title {
+            padding: 0 13px;
+            margin-bottom: 10px;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 10px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav a.active {
+            background: rgba(99,102,241,0.25);
+            color: white;
+            box-shadow: inset 3px 0 0 #818cf8;
+        }
+
+        .nav-icon {
+            width: 22px;
+            text-align: center;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .topbar p {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .demo-label {
+            padding: 9px 13px;
+            border-radius: 30px;
+            background: #fff7ed;
+            color: #9a3412;
+            border: 1px solid #fed7aa;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .hero {
+            padding: 28px;
+            border-radius: 18px;
+            color: white;
+            background: linear-gradient(135deg, #4338ca, #7c3aed);
+            margin-bottom: 25px;
+        }
+
+        .hero h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            max-width: 850px;
+            color: #e0e7ff;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-heading {
+            margin-bottom: 14px;
+        }
+
+        .section-heading h2 {
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .section-heading p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 5px 18px rgba(15,23,42,0.04);
+        }
+
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .architecture-box {
+            width: min(100%, 700px);
+            padding: 15px 18px;
+            border: 1px solid #c7d2fe;
+            border-radius: 12px;
+            background: #eef2ff;
+            text-align: center;
+        }
+
+        .architecture-box strong {
+            display: block;
+            color: #312e81;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .architecture-box span {
+            color: #4338ca;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .architecture-box.aws {
+            border-color: #fed7aa;
+            background: #fff7ed;
+        }
+
+        .architecture-box.aws strong {
+            color: #9a3412;
+        }
+
+        .architecture-box.aws span {
+            color: #9a3412;
+        }
+
+        .architecture-box.database {
+            border-color: #a7f3d0;
+            background: #ecfdf5;
+        }
+
+        .architecture-box.database strong,
+        .architecture-box.database span {
+            color: #065f46;
+        }
+
+        .arrow {
+            color: #64748b;
+            font-size: 23px;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .architecture-split {
+            width: min(100%, 700px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .architecture-split .architecture-box {
+            width: 100%;
+        }
+
+        .caption {
+            margin-top: 15px;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .service-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .service-card .service-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2ff;
+            border-radius: 12px;
+            font-size: 21px;
+            margin-bottom: 13px;
+        }
+
+        .service-card h3 {
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .service-card p {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .service-card .purpose {
+            display: block;
+            margin-top: 10px;
+            color: #4338ca;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        td strong {
+            color: #111827;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .info-card h3 {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .info-card ul {
+            padding-left: 19px;
+        }
+
+        .info-card li {
+            margin-bottom: 9px;
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 14px 16px;
+            border-left: 4px solid #6366f1;
+            border-radius: 8px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            padding: 18px 0 5px;
+            color: #9ca3af;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 1100px) {
+            .service-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 8px 5px 20px;
+            }
+
+            .logo-text,
+            .menu-title,
+            .menu-text {
+                display: none;
+            }
+
+            .nav a {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero h2 {
+                font-size: 20px;
+            }
+
+            .service-grid,
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-split {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🤖</div>
+            <div class="logo-text">
+                <h2>AI Help Desk</h2>
+                <p>Admin Portal</p>
+            </div>
+        </div>
+
+        <div class="menu">
+            <div class="menu-title">Main</div>
+
+            <nav class="nav">
+                <a href="admin-dashboard.html">
+                    <span class="nav-icon">🏠</span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+
+                <a href="admin-tickets.html">
+                    <span class="nav-icon">🎫</span>
+                    <span class="menu-text">Manage Tickets</span>
+                </a>
+
+                <a href="notifications.html">
+                    <span class="nav-icon">🔔</span>
+                    <span class="menu-text">Notifications</span>
+                </a>
+
+                <a href="admin-reports.html">
+                    <span class="nav-icon">📊</span>
+                    <span class="menu-text">Reports</span>
+                </a>
+
+                <a href="knowledge-base.html">
+                    <span class="nav-icon">📚</span>
+                    <span class="menu-text">Knowledge Base</span>
+                </a>
+
+                <a href="cloud-architecture.html" class="active">
+                    <span class="nav-icon">☁️</span>
+                    <span class="menu-text">Cloud Architecture</span>
+                </a>
+
+                <a href="conversation-design.html">
+                    <span class="nav-icon">💬</span>
+                    <span class="menu-text">Conversation Design</span>
+                </a>
+
+                <a href="login.html" onclick="logout(event)">
+                    <span class="nav-icon">🚪</span>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Cloud Architecture</h1>
+                <p>A proposed AWS architecture for the AI Student Help Desk System.</p>
+            </div>
+
+            <span class="demo-label">Architecture Proposal</span>
+        </header>
+
+
+        <section class="hero">
+            <h2>Cloud-Based Multi-Agent AI Student Help Desk</h2>
+            <p>
+                The system provides a central support platform where students can ask
+                questions, receive knowledge-base answers, create support tickets, and
+                track ticket progress. Administrators and faculty can manage requests.
+                In production, AWS services can provide hosting, authentication,
+                database storage, document storage, access control, and monitoring.
+            </p>
+        </section>
+
+
+        <!-- ARCHITECTURE DIAGRAM -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>1. Proposed AWS Architecture</h2>
+                <p>
+                    This diagram shows the proposed production design. It is an
+                    architecture plan, not a live AWS deployment.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="architecture">
+
+                    <div class="architecture-box">
+                        <strong>Users</strong>
+                        <span>Student · Faculty · Admin · HOD · HOI</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-box">
+                        <strong>Web Application</strong>
+                        <span>HTML, CSS, JavaScript interface · Student and staff portals</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-box aws">
+                        <strong>Amazon Cognito</strong>
+                        <span>User sign-in, authentication, and token-based identity</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-box aws">
+                        <strong>Backend API hosted on Amazon EC2</strong>
+                        <span>Receives requests, validates access, and coordinates application logic</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-box">
+                        <strong>Multi-Agent Help Desk Logic</strong>
+                        <span>
+                            Intent Recognition · Entity Extraction · Knowledge Retrieval ·
+                            Decision · Ticket Management · Faculty Routing · Notifications
+                        </span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-split">
+                        <div class="architecture-box database">
+                            <strong>Amazon RDS</strong>
+                            <span>Structured records: students, tickets, replies, departments, knowledge metadata</span>
+                        </div>
+
+                        <div class="architecture-box aws">
+                            <strong>Amazon S3</strong>
+                            <span>Documents, approved support files, and permitted attachments</span>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="architecture-split">
+                        <div class="architecture-box">
+                            <strong>AWS IAM</strong>
+                            <span>Controls permissions for AWS resources and services</span>
+                        </div>
+
+                        <div class="architecture-box">
+                            <strong>Amazon CloudWatch</strong>
+                            <span>Application logs, metrics, dashboards, and alarms</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <p class="caption">
+                    Production note: the backend should access RDS and S3 through
+                    appropriately restricted IAM permissions and secure network
+                    configuration. Users should not receive direct database credentials.
+                </p>
+            </div>
+        </section>
+
+
+        <!-- AWS SERVICES -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>2. AWS Services and Their Responsibilities</h2>
+                <p>
+                    Each service has a defined role in the proposed cloud deployment.
+                </p>
+            </div>
+
+            <div class="service-grid">
+
+                <article class="service-card">
+                    <div class="service-icon">🖥️</div>
+                    <h3>Amazon EC2</h3>
+                    <p>
+                        Runs the backend application and API. It receives requests
+                        from the web interface and executes ticket, routing, and
+                        multi-agent logic.
+                    </p>
+                    <span class="purpose">Purpose: Backend hosting</span>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">🗂️</div>
+                    <h3>Amazon S3</h3>
+                    <p>
+                        Stores support documents, approved knowledge files, and
+                        permitted attachments. Access should be controlled rather
+                        than making private files public.
+                    </p>
+                    <span class="purpose">Purpose: Document storage</span>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">🛢️</div>
+                    <h3>Amazon RDS</h3>
+                    <p>
+                        Stores structured application data such as users, departments,
+                        tickets, ticket replies, notifications, and knowledge-base
+                        metadata.
+                    </p>
+                    <span class="purpose">Purpose: Relational database</span>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">🔐</div>
+                    <h3>Amazon Cognito</h3>
+                    <p>
+                        Provides user sign-up and sign-in capabilities. The application
+                        can use authenticated identity and tokens to protect API
+                        requests.
+                    </p>
+                    <span class="purpose">Purpose: Authentication</span>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">🛡️</div>
+                    <h3>AWS IAM</h3>
+                    <p>
+                        Defines permissions for AWS users, roles, and services.
+                        Separate permissions should be used for backend access,
+                        storage, monitoring, and administration.
+                    </p>
+                    <span class="purpose">Purpose: Access management</span>
+                </article>
+
+                <article class="service-card">
+                    <div class="service-icon">📈</div>
+                    <h3>Amazon CloudWatch</h3>
+                    <p>
+                        Collects logs and metrics, supports dashboards, and can
+                        trigger alarms for errors or unusual resource usage.
+                    </p>
+                    <span class="purpose">Purpose: Monitoring</span>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- REQUEST FLOW -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>3. Student Request Flow</h2>
+                <p>
+                    Example: a student asks about a semester examination and may
+                    need to create a support ticket.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Step</th>
+                                <th>Component</th>
+                                <th>Activity</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td><strong>1</strong></td>
+                                <td>Student Web Portal</td>
+                                <td>The student signs in and enters a question in the chatbot.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>2</strong></td>
+                                <td>Amazon Cognito</td>
+                                <td>The production application verifies the student's identity.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>3</strong></td>
+                                <td>EC2 Backend API</td>
+                                <td>The backend receives the request and checks the user's access.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>4</strong></td>
+                                <td>Intent and Entity Agents</td>
+                                <td>The system identifies the topic, such as examination, and extracts details such as “hall ticket.”</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>5</strong></td>
+                                <td>Knowledge Retrieval Agent</td>
+                                <td>The system searches approved knowledge-base content for a relevant answer.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>6</strong></td>
+                                <td>Decision Agent</td>
+                                <td>If a suitable answer is available, the chatbot returns it. Otherwise, it can ask for clarification or offer ticket creation.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>7</strong></td>
+                                <td>Ticket Management Agent</td>
+                                <td>If the student creates a ticket, the backend saves it in Amazon RDS.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>8</strong></td>
+                                <td>Faculty Routing / Notification</td>
+                                <td>The ticket is routed according to department rules, and relevant notifications are generated.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>9</strong></td>
+                                <td>CloudWatch</td>
+                                <td>Application events, errors, and operational metrics can be monitored.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- DATA STORAGE -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>4. Data Storage Design</h2>
+                <p>
+                    Use a relational database for structured records and object storage
+                    for files.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Proposed storage</th>
+                                <th>Example fields or content</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Students and staff</td>
+                                <td>Amazon RDS</td>
+                                <td>User ID, name, email, role, department</td>
+                            </tr>
+
+                            <tr>
+                                <td>Support tickets</td>
+                                <td>Amazon RDS</td>
+                                <td>Ticket ID, student ID, subject, category, status, priority, assigned staff</td>
+                            </tr>
+
+                            <tr>
+                                <td>Ticket replies</td>
+                                <td>Amazon RDS</td>
+                                <td>Reply ID, ticket ID, sender, message, timestamp</td>
+                            </tr>
+
+                            <tr>
+                                <td>Notifications</td>
+                                <td>Amazon RDS</td>
+                                <td>Notification ID, recipient, message, read status, timestamp</td>
+                            </tr>
+
+                            <tr>
+                                <td>Knowledge-base records</td>
+                                <td>Amazon RDS</td>
+                                <td>Article ID, title, category, approval status, S3 object reference</td>
+                            </tr>
+
+                            <tr>
+                                <td>Documents and attachments</td>
+                                <td>Amazon S3</td>
+                                <td>Approved PDFs, help documents, permitted ticket attachments</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note">
+                    Store file references and related metadata in the database.
+                    Keep the actual files in S3. Apply access controls and avoid
+                    storing unnecessary personal information.
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SECURITY -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>5. Security and Access Control</h2>
+                <p>
+                    Security should be applied at the login, API, data, and
+                    monitoring layers.
+                </p>
+            </div>
+
+            <div class="two-column">
+
+                <div class="card info-card">
+                    <h3>Authentication and authorization</h3>
+                    <ul>
+                        <li>Use Amazon Cognito for user authentication in production.</li>
+                        <li>Verify authenticated requests in the backend.</li>
+                        <li>Check role and department permissions before allowing actions.</li>
+                        <li>Students should only access their own tickets and permitted records.</li>
+                        <li>Faculty and administrators should receive only the access required for their roles.</li>
+                    </ul>
+                </div>
+
+                <div class="card info-card">
+                    <h3>AWS resource protection</h3>
+                    <ul>
+                        <li>Use IAM roles and least-privilege permissions for AWS resources.</li>
+                        <li>Keep database access restricted to the backend.</li>
+                        <li>Protect stored documents with appropriate S3 access policies.</li>
+                        <li>Use secure connections and protect application secrets.</li>
+                        <li>Monitor errors and access-related events using CloudWatch.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- CURRENT VS PRODUCTION -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>6. Current Demo vs Production AWS System</h2>
+                <p>
+                    This distinction explains what is implemented now and what is
+                    proposed for deployment.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th>Current college demo</th>
+                                <th>Production design</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Web interface</td>
+                                <td>HTML, CSS, JavaScript pages</td>
+                                <td>Hosted web application connected to a backend API</td>
+                            </tr>
+
+                            <tr>
+                                <td>Data storage</td>
+                                <td>Browser localStorage</td>
+                                <td>Amazon RDS for structured records and Amazon S3 for files</td>
+                            </tr>
+
+                            <tr>
+                                <td>Authentication</td>
+                                <td>Demo login/session logic in the browser</td>
+                                <td>Amazon Cognito plus backend authorization checks</td>
+                            </tr>
+
+                            <tr>
+                                <td>Backend</td>
+                                <td>Frontend JavaScript demo logic</td>
+                                <td>Backend API hosted on Amazon EC2</td>
+                            </tr>
+
+                            <tr>
+                                <td>Access management</td>
+                                <td>Frontend role checks for demonstration</td>
+                                <td>AWS IAM for AWS resource permissions and backend role checks for application users</td>
+                            </tr>
+
+                            <tr>
+                                <td>Monitoring</td>
+                                <td>Browser console and manual testing</td>
+                                <td>Amazon CloudWatch logs, metrics, dashboards, and alarms</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note">
+                    <strong>Implementation status:</strong> The current website uses
+                    browser-side demo storage. The AWS services described on this
+                    page are the proposed production architecture; they are not
+                    connected by this HTML page.
+                </div>
+            </div>
+        </section>
+
+
+        <footer class="footer">
+            AI Student Help Desk System · Cloud Architecture
+        </footer>
+
+    </main>
+
+
+    <script>
+        function logout(event) {
+            event.preventDefault();
+
+            const confirmed = confirm("Are you sure you want to logout?");
+
+            if (!confirmed) {
+                return;
+            }
+
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("currentUserEmail");
+            localStorage.removeItem("currentUserRole");
+            localStorage.removeItem("studentEmail");
+            localStorage.removeItem("studentName");
+
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>

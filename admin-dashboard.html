@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | AI Student Help Desk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #111827, #172554);
+            color: white;
+            padding: 22px 15px;
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            border-radius: 12px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+            box-shadow: 0 8px 20px rgba(79,70,229,0.35);
+        }
+
+        .logo-text h2 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 3px;
+        }
+
+        .menu {
+            margin-top: 25px;
+            flex: 1;
+        }
+
+        .menu-title {
+            color: #6b7280;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+
+            padding: 0 13px;
+            margin-bottom: 10px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #cbd5e1;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            padding: 13px 13px;
+            border-radius: 10px;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition: all 0.2s ease;
+        }
+
+        .nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .nav a.active {
+            background: linear-gradient(
+                90deg,
+                rgba(79,70,229,0.35),
+                rgba(124,58,237,0.20)
+            );
+
+            color: white;
+            box-shadow: inset 3px 0 0 #6366f1;
+        }
+
+        .nav-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .badge {
+            margin-left: auto;
+
+            min-width: 22px;
+            height: 22px;
+
+            padding: 0 6px;
+
+            border-radius: 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #ef4444;
+            color: white;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* LOGOUT NAV LINK */
+
+        .logout-link {
+            margin-top: 18px;
+
+            color: #fca5a5 !important;
+
+            background: rgba(239,68,68,0.07);
+
+            border: 1px solid rgba(239,68,68,0.12);
+        }
+
+        .logout-link:hover {
+            background: rgba(220,38,38,0.25) !important;
+            color: #ffffff !important;
+            transform: translateX(3px);
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+            padding: 28px;
+        }
+
+        /* ================= TOPBAR ================= */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+        }
+
+        .page-title h1 {
+            font-size: 27px;
+            color: #111827;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 43px;
+            height: 43px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .profile-text strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .profile-text span {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            background: linear-gradient(
+                135deg,
+                #4f46e5,
+                #7c3aed
+            );
+
+            border-radius: 18px;
+
+            padding: 28px 30px;
+
+            color: white;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            box-shadow: 0 12px 30px rgba(79,70,229,0.20);
+        }
+
+        .hero h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .hero p {
+            color: #e0e7ff;
+            font-size: 14px;
+        }
+
+        .hero-icon {
+            font-size: 65px;
+            opacity: 0.20;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+
+            padding: 20px;
+
+            box-shadow: 0 5px 20px rgba(15,23,42,0.06);
+
+            display: flex;
+            align-items: center;
+            gap: 15px;
+
+            border: 1px solid #eef2f7;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 13px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+
+            background: #eef2ff;
+        }
+
+        .stat-card:nth-child(2) .stat-icon {
+            background: #fff7ed;
+        }
+
+        .stat-card:nth-child(3) .stat-icon {
+            background: #fefce8;
+        }
+
+        .stat-card:nth-child(4) .stat-icon {
+            background: #ecfdf5;
+        }
+
+        .stat-info p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .stat-info h3 {
+            font-size: 24px;
+            color: #111827;
+        }
+
+        /* ================= GRID ================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+
+            padding: 22px;
+
+            border: 1px solid #eef2f7;
+
+            box-shadow: 0 5px 20px rgba(15,23,42,0.05);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 20px;
+        }
+
+        .card-header h3 {
+            font-size: 17px;
+            color: #111827;
+        }
+
+        .card-header a {
+            text-decoration: none;
+            color: #4f46e5;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 11px;
+
+            font-size: 11px;
+            color: #6b7280;
+
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 13px 11px;
+
+            font-size: 13px;
+
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .ticket-id {
+            color: #4f46e5;
+            font-weight: 700;
+        }
+
+        .subject {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* ================= STATUS ================= */
+
+        .status {
+            display: inline-flex;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-open {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .status-resolved {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-closed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        /* ================= PRIORITY ================= */
+
+        .priority-item {
+            margin-bottom: 20px;
+        }
+
+        .priority-top {
+            display: flex;
+            justify-content: space-between;
+
+            margin-bottom: 7px;
+
+            font-size: 13px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 8px;
+
+            background: #eef2f7;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 20px;
+
+            background: linear-gradient(
+                90deg,
+                #4f46e5,
+                #7c3aed
+            );
+
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .quick-action {
+            text-decoration: none;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+
+            color: #1f2937;
+
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .quick-action:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            color: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        /* ================= LAST UPDATED ================= */
+
+        .last-updated {
+            text-align: right;
+            color: #9ca3af;
+            font-size: 11px;
+            margin-top: 20px;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            text-align: center;
+            padding: 30px 10px;
+
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 8px 5px 20px;
+            }
+
+            .logo-text,
+            .menu-title,
+            .menu-text {
+                display: none;
+            }
+
+            .nav a {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .nav a:hover {
+                transform: none;
+            }
+
+            .nav-icon {
+                width: auto;
+            }
+
+            .badge {
+                position: absolute;
+                margin-left: 27px;
+                margin-top: -22px;
+
+                min-width: 18px;
+                height: 18px;
+
+                font-size: 9px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .profile-text {
+                display: none;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero h2 {
+                font-size: 19px;
+            }
+
+            .hero-icon {
+                display: none;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .logout-link {
+                justify-content: center !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🤖
+            </div>
+
+            <div class="logo-text">
+                <h2>AI Help Desk</h2>
+                <p>Admin Portal</p>
+            </div>
+
+        </div>
+
+
+        <div class="menu">
+
+            <div class="menu-title">
+                Main
+            </div>
+
+            <nav class="nav">
+
+                <!-- Dashboard -->
+                <a href="admin-dashboard.html" class="active">
+
+                    <span class="nav-icon">🏠</span>
+
+                    <span class="menu-text">
+                        Dashboard
+                    </span>
+
+                </a>
+
+
+                <!-- Manage Tickets -->
+                <a href="admin-tickets.html">
+
+                    <span class="nav-icon">🎫</span>
+
+                    <span class="menu-text">
+                        Manage Tickets
+                    </span>
+
+                    <span id="ticketBadge" class="badge">
+                        0
+                    </span>
+
+                </a>
+
+
+                <!-- Notifications -->
+                <a href="notifications.html">
+
+                    <span class="nav-icon">🔔</span>
+
+                    <span class="menu-text">
+                        Notifications
+                    </span>
+
+                    <span id="notificationBadge" class="badge">
+                        0
+                    </span>
+
+                </a>
+
+
+                <!-- Reports -->
+                <a href="admin-reports.html">
+
+                    <span class="nav-icon">📊</span>
+
+                    <span class="menu-text">
+                        Reports
+                    </span>
+
+                </a>
+
+
+                <!-- Knowledge Base -->
+                <a href="knowledge-base.html">
+
+                    <span class="nav-icon">📚</span>
+
+                    <span class="menu-text">
+                        Knowledge Base
+                    </span>
+
+                </a>
+
+
+                <!-- LOGOUT NAV LINK -->
+                <a
+                    href="login.html"
+                    class="logout-link"
+                    onclick="logout(event)"
+                >
+
+                    <span class="nav-icon">🚪</span>
+
+                    <span class="menu-text">
+                        Logout
+                    </span>
+
+                </a>
+
+            </nav>
+
+        </div>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div class="page-title">
+
+                <h1>Admin Dashboard</h1>
+
+                <p>
+                    Manage your AI Student Help Desk system
+                </p>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div class="avatar" id="adminAvatar">
+                    A
+                </div>
+
+                <div class="profile-text">
+
+                    <strong id="adminName">
+                        Administrator
+                    </strong>
+
+                    <span>
+                        System Admin
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= HERO ================= -->
+
+        <section class="hero">
+
+            <div>
+
+                <h2 id="welcomeText">
+                    Welcome back, Administrator 👋
+                </h2>
+
+                <p>
+                    Here's what's happening with your student support system today.
+                </p>
+
+            </div>
+
+            <div class="hero-icon">
+                🤖
+            </div>
+
+        </section>
+
+
+        <!-- ================= STATS ================= -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🎫
+                </div>
+
+                <div class="stat-info">
+
+                    <p>
+                        Total Tickets
+                    </p>
+
+                    <h3 id="totalTickets">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🔴
+                </div>
+
+                <div class="stat-info">
+
+                    <p>
+                        Open Tickets
+                    </p>
+
+                    <h3 id="openTickets">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🟡
+                </div>
+
+                <div class="stat-info">
+
+                    <p>
+                        Pending Tickets
+                    </p>
+
+                    <h3 id="pendingTickets">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    🟢
+                </div>
+
+                <div class="stat-info">
+
+                    <p>
+                        Resolved Tickets
+                    </p>
+
+                    <h3 id="resolvedTickets">
+                        0
+                    </h3>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= DASHBOARD GRID ================= -->
+
+        <section class="dashboard-grid">
+
+
+            <!-- RECENT TICKETS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Recent Tickets
+                    </h3>
+
+                    <a href="admin-tickets.html">
+                        View All →
+                    </a>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    ID
+                                </th>
+
+                                <th>
+                                    Student
+                                </th>
+
+                                <th>
+                                    Subject
+                                </th>
+
+                                <th>
+                                    Department
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="recentTickets">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRIORITY -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h3>
+                        Priority Overview
+                    </h3>
+
+                </div>
+
+
+                <div class="priority-item">
+
+                    <div class="priority-top">
+
+                        <span>
+                            🔴 High Priority
+                        </span>
+
+                        <strong id="highCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            id="highProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="priority-item">
+
+                    <div class="priority-top">
+
+                        <span>
+                            🟡 Medium Priority
+                        </span>
+
+                        <strong id="mediumCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            id="mediumProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="priority-item">
+
+                    <div class="priority-top">
+
+                        <span>
+                            🟢 Low Priority
+                        </span>
+
+                        <strong id="lowCount">
+                            0
+                        </strong>
+
+                    </div>
+
+                    <div class="progress">
+
+                        <div
+                            id="lowProgress"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ================= QUICK ACTIONS ================= -->
+
+        <div class="card" style="margin-top:20px;">
+
+            <div class="card-header">
+
+                <h3>
+                    Quick Actions
+                </h3>
+
+            </div>
+
+
+            <div class="quick-actions">
+
+                <a
+                    href="admin-tickets.html"
+                    class="quick-action"
+                >
+                    🎫
+                    <span>
+                        Manage Tickets
+                    </span>
+                </a>
+
+
+                <a
+                    href="notifications.html"
+                    class="quick-action"
+                >
+                    🔔
+                    <span>
+                        View Notifications
+                    </span>
+                </a>
+
+
+                <a
+                    href="admin-reports.html"
+                    class="quick-action"
+                >
+                    📊
+                    <span>
+                        View Reports
+                    </span>
+                </a>
+
+
+                <a
+                    href="knowledge-base.html"
+                    class="quick-action"
+                >
+                    📚
+                    <span>
+                        Knowledge Base
+                    </span>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="lastUpdated"
+            class="last-updated"
+        >
+            Last updated: --
+        </div>
+
+    </main>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        const TICKET_KEY = "tickets";
+        const NOTIFICATION_KEY = "notifications";
+
+
+        /* =========================================
+           GET TICKETS
+        ========================================= */
+
+        function getTickets() {
+
+            try {
+
+                return JSON.parse(
+                    localStorage.getItem(TICKET_KEY) || "[]"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to read tickets:",
+                    error
+                );
+
+                return [];
+
+            }
+
+        }
+
+
+        /* =========================================
+           GET NOTIFICATIONS
+        ========================================= */
+
+        function getNotifications() {
+
+            try {
+
+                return JSON.parse(
+                    localStorage.getItem(NOTIFICATION_KEY) || "[]"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to read notifications:",
+                    error
+                );
+
+                return [];
+
+            }
+
+        }
+
+
+        /* =========================================
+           NORMALIZE STATUS
+        ========================================= */
+
+        function normalizeStatus(status) {
+
+            return String(
+                status || "Open"
+            ).trim().toLowerCase();
+
+        }
+
+
+        /* =========================================
+           UPDATE NOTIFICATION BADGE
+        ========================================= */
+
+        function updateNotificationBadge() {
+
+            const badge =
+                document.getElementById(
+                    "notificationBadge"
+                );
+
+            if (!badge) return;
+
+
+            const notifications =
+                getNotifications();
+
+
+            const unread =
+                notifications.filter(
+                    notification =>
+                        notification.read !== true
+                ).length;
+
+
+            badge.textContent = unread;
+
+        }
+
+
+        /* =========================================
+           STATUS CLASS
+        ========================================= */
+
+        function getStatusClass(status) {
+
+            const value =
+                normalizeStatus(status);
+
+
+            if (value === "pending") {
+
+                return "status-pending";
+
+            }
+
+
+            if (
+                value === "resolved" ||
+                value === "closed"
+            ) {
+
+                return value === "closed"
+                    ? "status-closed"
+                    : "status-resolved";
+
+            }
+
+
+            return "status-open";
+
+        }
+
+
+        /* =========================================
+           UPDATE DASHBOARD
+        ========================================= */
+
+        function updateDashboard() {
+
+            const tickets =
+                getTickets();
+
+
+            /* -------------------------
+               COUNTS
+            ------------------------- */
+
+            let open = 0;
+            let pending = 0;
+            let resolved = 0;
+
+
+            tickets.forEach(ticket => {
+
+                const status =
+                    normalizeStatus(
+                        ticket.status
+                    );
+
+
+                if (status === "open") {
+
+                    open++;
+
+                }
+                else if (status === "pending") {
+
+                    pending++;
+
+                }
+                else if (
+                    status === "resolved" ||
+                    status === "closed"
+                ) {
+
+                    resolved++;
+
+                }
+
+            });
+
+
+            /* -------------------------
+               STAT CARDS
+            ------------------------- */
+
+            document.getElementById(
+                "totalTickets"
+            ).textContent = tickets.length;
+
+
+            document.getElementById(
+                "openTickets"
+            ).textContent = open;
+
+
+            document.getElementById(
+                "pendingTickets"
+            ).textContent = pending;
+
+
+            document.getElementById(
+                "resolvedTickets"
+            ).textContent = resolved;
+
+
+            /* -------------------------
+               TICKET BADGE
+            ------------------------- */
+
+            const ticketBadge =
+                document.getElementById(
+                    "ticketBadge"
+                );
+
+
+            if (ticketBadge) {
+
+                ticketBadge.textContent =
+                    open + pending;
+
+            }
+
+
+            /* -------------------------
+               NOTIFICATION BADGE
+            ------------------------- */
+
+            updateNotificationBadge();
+
+
+            /* -------------------------
+               PRIORITY
+            ------------------------- */
+
+            updatePriority(
+                tickets
+            );
+
+
+            /* -------------------------
+               RECENT TICKETS
+            ------------------------- */
+
+            renderRecentTickets(
+                tickets
+            );
+
+
+            /* -------------------------
+               LAST UPDATED
+            ------------------------- */
+
+            const lastUpdated =
+                document.getElementById(
+                    "lastUpdated"
+                );
+
+
+            if (lastUpdated) {
+
+                lastUpdated.textContent =
+                    "Last updated: " +
+                    new Date().toLocaleTimeString();
+
+            }
+
+        }
+
+
+        /* =========================================
+           RECENT TICKETS
+        ========================================= */
+
+        function renderRecentTickets(
+            tickets
+        ) {
+
+            const container =
+                document.getElementById(
+                    "recentTickets"
+                );
+
+
+            if (!container) return;
+
+
+            if (!tickets.length) {
+
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty">
+                                No tickets found.
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+
+            const sortedTickets =
+                [...tickets].sort(
+                    (a, b) => {
+
+                        const dateA =
+                            new Date(
+                                a.updatedAt ||
+                                a.createdAt ||
+                                0
+                            ).getTime();
+
+                        const dateB =
+                            new Date(
+                                b.updatedAt ||
+                                b.createdAt ||
+                                0
+                            ).getTime();
+
+                        return dateB - dateA;
+
+                    }
+                );
+
+
+            const recent =
+                sortedTickets.slice(
+                    0,
+                    5
+                );
+
+
+            container.innerHTML =
+                recent.map(ticket => {
+
+                    const id =
+                        ticket.id ||
+                        ticket.ticketId ||
+                        "N/A";
+
+
+                    const student =
+                        ticket.studentName ||
+                        ticket.student ||
+                        ticket.name ||
+                        "Unknown";
+
+
+                    const subject =
+                        ticket.subject ||
+                        ticket.title ||
+                        ticket.issue ||
+                        "No subject";
+
+
+                    const department =
+                        ticket.department ||
+                        ticket.dept ||
+                        ticket.category ||
+                        "General";
+
+
+                    const status =
+                        ticket.status ||
+                        "Open";
+
+
+                    return `
+
+                        <tr>
+
+                            <td>
+                                <span class="ticket-id">
+                                    ${escapeHTML(id)}
+                                </span>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(student)}
+                            </td>
+
+                            <td>
+                                <span class="subject">
+                                    ${escapeHTML(subject)}
+                                </span>
+                            </td>
+
+                            <td>
+                                ${escapeHTML(department)}
+                            </td>
+
+                            <td>
+
+                                <span
+                                    class="status ${getStatusClass(status)}"
+                                >
+                                    ${escapeHTML(status)}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }).join("");
+
+        }
+
+
+        /* =========================================
+           PRIORITY OVERVIEW
+        ========================================= */
+
+        function updatePriority(
+            tickets
+        ) {
+
+            let high = 0;
+            let medium = 0;
+            let low = 0;
+
+
+            tickets.forEach(ticket => {
+
+                const priority =
+                    String(
+                        ticket.priority || "Medium"
+                    ).toLowerCase();
+
+
+                if (priority === "high") {
+
+                    high++;
+
+                }
+                else if (priority === "low") {
+
+                    low++;
+
+                }
+                else {
+
+                    medium++;
+
+                }
+
+            });
+
+
+            document.getElementById(
+                "highCount"
+            ).textContent = high;
+
+
+            document.getElementById(
+                "mediumCount"
+            ).textContent = medium;
+
+
+            document.getElementById(
+                "lowCount"
+            ).textContent = low;
+
+
+            const total =
+                tickets.length || 1;
+
+
+            document.getElementById(
+                "highProgress"
+            ).style.width =
+                (high / total * 100) + "%";
+
+
+            document.getElementById(
+                "mediumProgress"
+            ).style.width =
+                (medium / total * 100) + "%";
+
+
+            document.getElementById(
+                "lowProgress"
+            ).style.width =
+                (low / total * 100) + "%";
+
+        }
+
+
+        /* =========================================
+           LOAD ADMIN USER
+        ========================================= */
+
+        function loadCurrentAdmin() {
+
+            try {
+
+                const storedUser =
+                    localStorage.getItem(
+                        "currentUser"
+                    );
+
+
+                if (!storedUser) return;
+
+
+                const user =
+                    JSON.parse(
+                        storedUser
+                    );
+
+
+                const name =
+                    user.name ||
+                    user.fullName ||
+                    user.username ||
+                    "Administrator";
+
+
+                document.getElementById(
+                    "adminName"
+                ).textContent = name;
+
+
+                document.getElementById(
+                    "welcomeText"
+                ).textContent =
+                    `Welcome back, ${name} 👋`;
+
+
+                document.getElementById(
+                    "adminAvatar"
+                ).textContent =
+                    name
+                        .charAt(0)
+                        .toUpperCase();
+
+            }
+            catch (error) {
+
+                console.log(
+                    "No admin profile found."
+                );
+
+            }
+
+        }
+
+
+        /* =========================================
+           LOGOUT
+        ========================================= */
+
+        function logout(event) {
+
+            event.preventDefault();
+
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            /*
+                IMPORTANT:
+                Tickets and notifications are NOT deleted.
+                Only login/session information is cleared.
+            */
+
+            localStorage.removeItem(
+                "currentUser"
+            );
+
+            localStorage.removeItem(
+                "currentUserEmail"
+            );
+
+            localStorage.removeItem(
+                "currentUserRole"
+            );
+
+            localStorage.removeItem(
+                "studentEmail"
+            );
+
+            localStorage.removeItem(
+                "studentName"
+            );
+
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        /* =========================================
+           ESCAPE HTML
+        ========================================= */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================
+           INITIAL LOAD
+        ========================================= */
+
+        loadCurrentAdmin();
+
+        updateDashboard();
+
+
+        /* =========================================
+           AUTO REFRESH
+        ========================================= */
+
+        setInterval(
+            updateDashboard,
+            2000
+        );
+
+
+        /* =========================================
+           STORAGE SYNC
+        ========================================= */
+
+        window.addEventListener(
+            "storage",
+            function(event) {
+
+                if (
+                    event.key === TICKET_KEY ||
+                    event.key === NOTIFICATION_KEY ||
+                    event.key === "currentUser"
+                ) {
+
+                    loadCurrentAdmin();
+
+                    updateDashboard();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

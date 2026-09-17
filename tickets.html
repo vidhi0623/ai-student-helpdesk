@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets | AI Student Help Desk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #172033;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #111827, #172554);
+            color: white;
+            padding: 22px 15px;
+            z-index: 1000;
+            box-shadow: 8px 0 30px rgba(15, 23, 42, .12);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px 28px;
+            font-size: 19px;
+            font-weight: 800;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo small {
+            display: block;
+            font-size: 9px;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu-title {
+            color: #64748b;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+            padding: 15px 13px 8px;
+        }
+
+        .menu li {
+            margin-bottom: 5px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 14px;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 11px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: linear-gradient(90deg, #2563eb, #3b82f6);
+            color: white;
+            box-shadow: 0 7px 20px rgba(37, 99, 235, .25);
+        }
+
+        .menu-icon {
+            width: 24px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        .badge {
+            margin-left: auto;
+            min-width: 21px;
+            height: 21px;
+            padding: 0 6px;
+            border-radius: 20px;
+            background: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+            max-width: 1500px;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 29px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .header-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+
+        /* TOP BAR */
+        .top-bar {
+            background: white;
+            padding: 17px 20px;
+            border-radius: 15px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 22px rgba(15, 23, 42, .06);
+            border: 1px solid #edf0f5;
+        }
+
+        .ticket-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .count-label {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .count {
+            color: #2563eb;
+            font-weight: 800;
+            font-size: 19px;
+        }
+
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+            border: 0;
+            padding: 10px 17px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: .2s;
+        }
+
+        .refresh-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* FILTERS */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            padding: 9px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* TICKET LIST */
+        .ticket-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        /* TICKET CARD */
+        .ticket-card {
+            background: white;
+            border-radius: 17px;
+            padding: 23px;
+            box-shadow: 0 7px 25px rgba(15, 23, 42, .06);
+            border: 1px solid #edf0f5;
+            border-left: 5px solid #2563eb;
+            transition: .2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(15, 23, 42, .09);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .ticket-id {
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .4px;
+        }
+
+        .ticket-subject {
+            font-size: 20px;
+            font-weight: 800;
+            margin-top: 6px;
+        }
+
+        /* STATUS */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .open {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pending {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .resolved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .closed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        /* INFO */
+        .ticket-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            padding: 13px;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* DESCRIPTION */
+        .description-box {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 11px;
+            margin-bottom: 18px;
+        }
+
+        .description-box h3 {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .description-box p {
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        /* REPLIES */
+        .replies-section {
+            margin-top: 18px;
+        }
+
+        .replies-title {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .reply {
+            padding: 14px;
+            border-radius: 11px;
+            margin-bottom: 9px;
+            line-height: 1.5;
+        }
+
+        .admin-reply {
+            background: #f5f3ff;
+            border-left: 4px solid #7c3aed;
+        }
+
+        .student-reply {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .reply-sender {
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .reply-date {
+            color: #94a3b8;
+            font-size: 10px;
+        }
+
+        .reply-message {
+            color: #374151;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+
+        .no-reply {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            padding: 15px;
+            border-radius: 10px;
+            color: #64748b;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* EMPTY */
+        .empty {
+            background: white;
+            padding: 65px 20px;
+            text-align: center;
+            border-radius: 17px;
+            box-shadow: 0 7px 25px rgba(15, 23, 42, .06);
+        }
+
+        .empty-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .empty h2 {
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 18px;
+        }
+
+        .create-btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 11px;
+            padding: 25px 0 5px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1000px) {
+            .ticket-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 18px 9px;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 8px 0 25px;
+            }
+
+            .logo-text,
+            .menu-text,
+            .menu-title {
+                display: none;
+            }
+
+            .menu a {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .badge {
+                position: absolute;
+                margin-left: 20px;
+                margin-top: -22px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 17px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .header-icon {
+                display: none;
+            }
+
+            .top-bar {
+                gap: 12px;
+                align-items: flex-start;
+            }
+
+            .ticket-info {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-header {
+                flex-direction: column;
+            }
+
+            .ticket-subject {
+                font-size: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+
+            <div class="logo-text">
+                AI Help Desk
+                <small>STUDENT PORTAL</small>
+            </div>
+        </div>
+
+        <ul class="menu">
+
+            <div class="menu-title">Student</div>
+
+            <li>
+                <a href="student-dashboard.html">
+                    <span class="menu-icon">📊</span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="chatbot.html">
+                    <span class="menu-icon">🤖</span>
+                    <span class="menu-text">Ask AI</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="tickets.html" class="active">
+                    <span class="menu-icon">🎫</span>
+                    <span class="menu-text">My Tickets</span>
+                    <span id="ticketBadge" class="badge">0</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="notifications.html">
+                    <span class="menu-icon">🔔</span>
+                    <span class="menu-text">Notifications</span>
+                    <span id="notificationBadge" class="badge">0</span>
+                </a>
+            </li>
+
+            <div class="menu-title">Account</div>
+
+            <li>
+                <a href="login.html">
+                    <span class="menu-icon">🚪</span>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </li>
+
+        </ul>
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="header">
+
+            <div>
+                <h1>🎫 My Support Tickets</h1>
+
+                <p>
+                    Track your support requests, status and Help Desk replies.
+                </p>
+            </div>
+
+            <div class="header-icon">
+                🎓
+            </div>
+
+        </div>
+
+
+        <!-- TOP BAR -->
+        <div class="top-bar">
+
+            <div class="ticket-summary">
+
+                <div class="summary-icon">
+                    🎫
+                </div>
+
+                <div>
+
+                    <div class="count-label">
+                        Your Support Tickets
+                    </div>
+
+                    <span id="ticketCount" class="count">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button class="refresh-btn" onclick="loadTickets()">
+                🔄 Refresh
+            </button>
+
+        </div>
+
+
+        <!-- FILTERS -->
+        <div class="filters">
+
+            <button
+                class="filter-btn active"
+                onclick="setFilter('all', this)">
+                All
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="setFilter('Open', this)">
+                🟠 Open
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="setFilter('Pending', this)">
+                🔵 Pending
+            </button>
+
+            <button
+                class="filter-btn"
+                onclick="setFilter('Resolved', this)">
+                🟢 Resolved
+            </button>
+
+        </div>
+
+
+        <!-- TICKET LIST -->
+        <div id="ticketList" class="ticket-list"></div>
+
+
+        <div class="footer">
+            AI Student Help Desk • Ticket information updates automatically
+        </div>
+
+    </main>
+
+
+    <script>
+
+        const TICKET_KEY = "tickets";
+        const NOTIFICATION_KEY = "notifications";
+
+        let currentFilter = "all";
+
+
+        /* ===============================
+           GET ALL TICKETS
+        =============================== */
+
+        function getTickets() {
+
+            try {
+
+                const data = localStorage.getItem(TICKET_KEY);
+
+                if (!data) {
+                    return [];
+                }
+
+                const tickets = JSON.parse(data);
+
+                if (!Array.isArray(tickets)) {
+                    return [];
+                }
+
+                return tickets;
+
+            } catch (error) {
+
+                console.error("Ticket loading error:", error);
+
+                return [];
+            }
+        }
+
+
+        /* ===============================
+           CURRENT STUDENT EMAIL
+        =============================== */
+
+        function getCurrentStudentEmail() {
+
+            return (
+                localStorage.getItem("studentEmail") ||
+                localStorage.getItem("email") ||
+                ""
+            )
+            .trim()
+            .toLowerCase();
+
+        }
+
+
+        /* ===============================
+           ESCAPE HTML
+        =============================== */
+
+        function escapeHTML(value) {
+
+            const div = document.createElement("div");
+
+            div.textContent = value ?? "";
+
+            return div.innerHTML;
+        }
+
+
+        /* ===============================
+           DATE FORMAT
+        =============================== */
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "-";
+            }
+
+            const date = new Date(value);
+
+            if (isNaN(date.getTime())) {
+                return String(value);
+            }
+
+            return date.toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
+
+
+        /* ===============================
+           STATUS CLASS
+        =============================== */
+
+        function getStatusClass(status) {
+
+            const value = String(status || "Open")
+                .trim()
+                .toLowerCase();
+
+            if (value === "pending") {
+                return "pending";
+            }
+
+            if (value === "resolved") {
+                return "resolved";
+            }
+
+            if (value === "closed") {
+                return "closed";
+            }
+
+            return "open";
+        }
+
+
+        /* ===============================
+           FILTER
+        =============================== */
+
+        function setFilter(filter, button) {
+
+            currentFilter = filter;
+
+            document
+                .querySelectorAll(".filter-btn")
+                .forEach(function(btn) {
+
+                    btn.classList.remove("active");
+
+                });
+
+            button.classList.add("active");
+
+            loadTickets();
+        }
+
+
+        /* ===============================
+           LOAD TICKETS
+        =============================== */
+
+        function loadTickets() {
+
+            const allTickets = getTickets();
+
+            const studentEmail = getCurrentStudentEmail();
+
+            let tickets = [];
+
+
+            /*
+                IMPORTANT FIX:
+
+                If ticket email matches current student,
+                show it.
+
+                If ticket has NO email at all,
+                also show it.
+
+                This prevents tickets from disappearing
+                because of an email-key mismatch.
+            */
+
+            if (studentEmail !== "") {
+
+                tickets = allTickets.filter(function(ticket) {
+
+                    const ticketEmail = String(
+                        ticket.email ||
+                        ticket.studentEmail ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                    /*
+                        Normal case:
+                        email matches
+                    */
+
+                    if (ticketEmail === studentEmail) {
+                        return true;
+                    }
+
+
+                    /*
+                        Compatibility case:
+                        old ticket does not contain email
+                    */
+
+                    if (ticketEmail === "") {
+                        return true;
+                    }
+
+
+                    return false;
+
+                });
+
+            } else {
+
+                /*
+                    No logged-in student email found.
+                    Show all tickets so testing still works.
+                */
+
+                tickets = allTickets;
+            }
+
+
+            /* STATUS FILTER */
+
+            if (currentFilter !== "all") {
+
+                tickets = tickets.filter(function(ticket) {
+
+                    return String(
+                        ticket.status || "Open"
+                    )
+                    .trim()
+                    .toLowerCase()
+                    === currentFilter.toLowerCase();
+
+                });
+
+            }
+
+
+            /* SORT NEWEST FIRST */
+
+            tickets = tickets.slice().sort(function(a, b) {
+
+                const dateA = new Date(
+                    a.updatedAt ||
+                    a.createdAt ||
+                    a.date ||
+                    0
+                );
+
+                const dateB = new Date(
+                    b.updatedAt ||
+                    b.createdAt ||
+                    b.date ||
+                    0
+                );
+
+                return dateB - dateA;
+
+            });
+
+
+            /* UPDATE COUNTS */
+
+            document.getElementById("ticketCount").textContent =
+                tickets.length;
+
+            document.getElementById("ticketBadge").textContent =
+                tickets.length;
+
+
+            updateNotificationBadge();
+
+
+            /* CONTAINER */
+
+            const container =
+                document.getElementById("ticketList");
+
+            container.innerHTML = "";
+
+
+            /* EMPTY */
+
+            if (tickets.length === 0) {
+
+                container.innerHTML = `
+                    <div class="empty">
+
+                        <div class="empty-icon">
+                            🎫
+                        </div>
+
+                        <h2>
+                            No Tickets Found
+                        </h2>
+
+                        <p>
+                            ${
+                                currentFilter === "all"
+                                ? "You have not created any support tickets yet."
+                                : "No tickets match this status."
+                            }
+                        </p>
+
+                        <a
+                            href="chatbot.html"
+                            class="create-btn"
+                        >
+                            🤖 Create Support Ticket
+                        </a>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            /* RENDER */
+
+            tickets.forEach(function(ticket) {
+
+                renderTicket(ticket, container);
+
+            });
+
+        }
+
+
+        /* ===============================
+           RENDER SINGLE TICKET
+        =============================== */
+
+        function renderTicket(ticket, container) {
+
+            const status =
+                ticket.status || "Open";
+
+            const statusClass =
+                getStatusClass(status);
+
+
+            const ticketId =
+                ticket.id ||
+                ticket.ticketId ||
+                "TICKET";
+
+
+            const subject =
+                ticket.subject ||
+                ticket.title ||
+                ticket.category ||
+                "Support Request";
+
+
+            const department =
+                ticket.department ||
+                ticket.dept ||
+                ticket.category ||
+                "General";
+
+
+            const priority =
+                ticket.priority ||
+                "Medium";
+
+
+            const assignedTo =
+                ticket.assignedTo ||
+                ticket.assigned ||
+                "Unassigned";
+
+
+            const createdDate =
+                ticket.createdAt ||
+                ticket.date ||
+                "";
+
+
+            const updatedDate =
+                ticket.updatedAt ||
+                ticket.createdAt ||
+                ticket.date ||
+                "";
+
+
+            const description =
+                ticket.description ||
+                ticket.message ||
+                ticket.issue ||
+                "No description provided.";
+
+
+            /* REPLIES */
+
+            const replies =
+                Array.isArray(ticket.replies)
+                ? ticket.replies
+                : [];
+
+
+            let repliesHTML = "";
+
+
+            if (replies.length === 0) {
+
+                repliesHTML = `
+                    <div class="no-reply">
+                        ⏳ No reply from Admin yet.
+                        <br>
+                        The Help Desk will respond here.
+                    </div>
+                `;
+
+            } else {
+
+                repliesHTML = replies.map(function(reply) {
+
+                    const sender = String(
+                        reply.sender ||
+                        reply.from ||
+                        "Admin"
+                    );
+
+
+                    const isAdmin =
+                        sender.toLowerCase().includes("admin") ||
+                        sender.toLowerCase().includes("staff") ||
+                        sender.toLowerCase().includes("faculty");
+
+
+                    const replyClass =
+                        isAdmin
+                        ? "admin-reply"
+                        : "student-reply";
+
+
+                    const replySender =
+                        isAdmin
+                        ? "👨‍💼 Admin"
+                        : "🎓 Student";
+
+
+                    return `
+                        <div class="reply ${replyClass}">
+
+                            <div class="reply-header">
+
+                                <span class="reply-sender">
+                                    ${replySender}
+                                </span>
+
+                                <span class="reply-date">
+                                    ${escapeHTML(
+                                        formatDate(
+                                            reply.date ||
+                                            reply.createdAt ||
+                                            reply.timestamp ||
+                                            ""
+                                        )
+                                    )}
+                                </span>
+
+                            </div>
+
+                            <div class="reply-message">
+                                ${escapeHTML(
+                                    reply.message ||
+                                    reply.text ||
+                                    ""
+                                )}
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join("");
+
+            }
+
+
+            /* CARD */
+
+            const card =
+                document.createElement("div");
+
+            card.className = "ticket-card";
+
+
+            card.innerHTML = `
+
+                <!-- HEADER -->
+
+                <div class="ticket-header">
+
+                    <div>
+
+                        <div class="ticket-id">
+                            ${escapeHTML(ticketId)}
+                        </div>
+
+                        <div class="ticket-subject">
+                            ${escapeHTML(subject)}
+                        </div>
+
+                    </div>
+
+
+                    <span class="status ${statusClass}">
+
+                        ${
+                            String(status).toLowerCase() === "open"
+                            ? "🟠"
+                            : String(status).toLowerCase() === "pending"
+                            ? "🔵"
+                            : String(status).toLowerCase() === "resolved"
+                            ? "🟢"
+                            : "⚪"
+                        }
+
+                        ${escapeHTML(status)}
+
+                    </span>
+
+                </div>
+
+
+                <!-- INFORMATION -->
+
+                <div class="ticket-info">
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Department
+                        </div>
+
+                        <div class="info-value">
+                            ${escapeHTML(department)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Priority
+                        </div>
+
+                        <div class="info-value">
+                            ${escapeHTML(priority)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Created
+                        </div>
+
+                        <div class="info-value">
+                            ${escapeHTML(
+                                formatDate(createdDate)
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <div class="info-label">
+                            Assigned To
+                        </div>
+
+                        <div class="info-value">
+                            ${escapeHTML(assignedTo)}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="description-box">
+
+                    <h3>
+                        📝 Your Problem
+                    </h3>
+
+                    <p>
+                        ${escapeHTML(description)}
+                    </p>
+
+                </div>
+
+
+                <!-- CONVERSATION -->
+
+                <div class="replies-section">
+
+                    <div class="replies-title">
+                        💬 Conversation
+                    </div>
+
+                    ${repliesHTML}
+
+                </div>
+
+
+                <!-- UPDATED -->
+
+                <div
+                    style="
+                        margin-top:15px;
+                        padding-top:12px;
+                        border-top:1px solid #eef2f7;
+                        color:#94a3b8;
+                        font-size:10px;
+                        text-align:right;
+                    "
+                >
+
+                    Last updated:
+
+                    ${escapeHTML(
+                        formatDate(updatedDate)
+                    )}
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        }
+
+
+        /* ===============================
+           NOTIFICATION BADGE
+        =============================== */
+
+        function updateNotificationBadge() {
+
+            try {
+
+                const data =
+                    localStorage.getItem(NOTIFICATION_KEY);
+
+
+                if (!data) {
+
+                    document.getElementById(
+                        "notificationBadge"
+                    ).textContent = "0";
+
+                    return;
+                }
+
+
+                const notifications =
+                    JSON.parse(data);
+
+
+                if (!Array.isArray(notifications)) {
+
+                    document.getElementById(
+                        "notificationBadge"
+                    ).textContent = "0";
+
+                    return;
+                }
+
+
+                const unread =
+                    notifications.filter(function(notification) {
+
+                        return notification.read !== true;
+
+                    }).length;
+
+
+                document.getElementById(
+                    "notificationBadge"
+                ).textContent = unread;
+
+
+            } catch (error) {
+
+                console.error(
+                    "Notification error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* ===============================
+           INITIAL LOAD
+        =============================== */
+
+        loadTickets();
+
+
+        /* ===============================
+           STORAGE SYNC
+        =============================== */
+
+        window.addEventListener(
+            "storage",
+            function(event) {
+
+                if (
+                    event.key === TICKET_KEY ||
+                    event.key === NOTIFICATION_KEY
+                ) {
+
+                    loadTickets();
+
+                }
+
+            }
+        );
+
+
+        /* ===============================
+           AUTO REFRESH
+        =============================== */
+
+        setInterval(
+            function() {
+
+                loadTickets();
+
+            },
+            2000
+        );
+
+    </script>
+
+</body>
+</html>

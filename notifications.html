@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications | AI Student Help Desk</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    color:#172033;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:250px;
+    height:100vh;
+    background:linear-gradient(180deg,#111827,#1e3a8a);
+    color:white;
+    padding:25px 18px;
+    z-index:10;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:800;
+    margin-bottom:35px;
+    padding-left:10px;
+}
+
+.logo span{
+    color:#60a5fa;
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.nav a{
+    text-decoration:none;
+    color:#dbeafe;
+    padding:14px 15px;
+    border-radius:12px;
+    transition:.2s;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.nav a:hover,
+.nav a.active{
+    background:rgba(255,255,255,.14);
+    color:white;
+}
+
+.logout{
+    position:absolute;
+    bottom:25px;
+    left:18px;
+    right:18px;
+}
+
+/* MAIN */
+.main{
+    margin-left:250px;
+    padding:25px;
+}
+
+/* TOPBAR */
+.topbar{
+    background:white;
+    border-radius:18px;
+    padding:18px 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 8px 30px rgba(15,23,42,.06);
+    margin-bottom:25px;
+}
+
+.page-title{
+    font-size:25px;
+    font-weight:800;
+}
+
+.page-subtitle{
+    color:#64748b;
+    margin-top:5px;
+    font-size:14px;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+}
+
+.profile-name{
+    font-weight:700;
+}
+
+/* ACTION BAR */
+.actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.filter-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.filter-buttons button,
+.action-btn{
+    border:0;
+    padding:10px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    background:white;
+    color:#475569;
+    box-shadow:0 4px 15px rgba(15,23,42,.06);
+}
+
+.filter-buttons button.active{
+    background:#2563eb;
+    color:white;
+}
+
+.action-btn{
+    background:#111827;
+    color:white;
+}
+
+/* NOTIFICATION LIST */
+.notification-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.notification{
+    background:white;
+    border-radius:18px;
+    padding:20px;
+    display:flex;
+    gap:16px;
+    box-shadow:0 8px 25px rgba(15,23,42,.06);
+    border-left:5px solid #cbd5e1;
+    transition:.2s;
+}
+
+.notification:hover{
+    transform:translateY(-2px);
+}
+
+.notification.unread{
+    border-left-color:#2563eb;
+    background:#f8fbff;
+}
+
+.icon{
+    min-width:45px;
+    width:45px;
+    height:45px;
+    border-radius:14px;
+    background:#dbeafe;
+    color:#2563eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+}
+
+.content{
+    flex:1;
+}
+
+.notification-title{
+    font-weight:800;
+    font-size:16px;
+    margin-bottom:6px;
+}
+
+.notification-message{
+    color:#475569;
+    line-height:1.5;
+    font-size:14px;
+}
+
+.notification-time{
+    color:#94a3b8;
+    font-size:12px;
+    margin-top:8px;
+}
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:22px;
+    height:22px;
+    padding:0 7px;
+    background:#ef4444;
+    color:white;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:bold;
+    margin-left:5px;
+}
+
+.mark-btn{
+    align-self:center;
+    border:0;
+    background:#eff6ff;
+    color:#2563eb;
+    padding:9px 12px;
+    border-radius:9px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.mark-btn:hover{
+    background:#dbeafe;
+}
+
+.empty{
+    background:white;
+    border-radius:18px;
+    padding:60px 20px;
+    text-align:center;
+    color:#64748b;
+    box-shadow:0 8px 25px rgba(15,23,42,.06);
+}
+
+.empty-icon{
+    font-size:45px;
+    margin-bottom:12px;
+}
+
+/* MOBILE */
+@media(max-width:800px){
+    .sidebar{
+        position:relative;
+        width:100%;
+        height:auto;
+    }
+
+    .logout{
+        position:static;
+        margin-top:10px;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .topbar,
+    .actions{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <div class="logo">🎓 AI <span>Help Desk</span></div>
+
+    <nav class="nav">
+        <a href="student-dashboard.html">🏠 Dashboard</a>
+        <a href="chatbot.html">🤖 AI Chatbot</a>
+        <a href="tickets.html">🎫 My Tickets</a>
+        <a href="notifications.html" class="active">
+            🔔 Notifications
+            <span id="navBadge" class="badge" style="display:none;">0</span>
+        </a>
+    </nav>
+
+    <a href="login.html" class="nav logout">🚪 Logout</a>
+</aside>
+
+<main class="main">
+
+    <div class="topbar">
+        <div>
+            <div class="page-title">Notifications</div>
+            <div class="page-subtitle">
+                Stay updated with your tickets and help desk activity.
+            </div>
+        </div>
+
+        <div class="profile">
+            <div class="avatar" id="avatar">S</div>
+            <div>
+                <div class="profile-name" id="studentName">Student</div>
+                <div style="font-size:12px;color:#64748b;">Student Portal</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions">
+
+        <div class="filter-buttons">
+            <button class="active" onclick="setFilter('all',this)">All</button>
+            <button onclick="setFilter('unread',this)">Unread</button>
+            <button onclick="setFilter('read',this)">Read</button>
+        </div>
+
+        <button class="action-btn" onclick="markAllRead()">
+            ✓ Mark All as Read
+        </button>
+
+    </div>
+
+    <div id="notificationList" class="notification-list"></div>
+
+</main>
+
+<script>
+
+const NOTIFICATION_KEY = "notifications";
+
+let currentFilter = "all";
+
+/* ---------- STORAGE ---------- */
+
+function getNotifications(){
+    try{
+        const data = JSON.parse(
+            localStorage.getItem(NOTIFICATION_KEY) || "[]"
+        );
+
+        return Array.isArray(data) ? data : [];
+    }catch(error){
+        return [];
+    }
+}
+
+function saveNotifications(data){
+    localStorage.setItem(
+        NOTIFICATION_KEY,
+        JSON.stringify(data)
+    );
+}
+
+/* ---------- CURRENT STUDENT ---------- */
+
+function getCurrentStudentEmail(){
+
+    return (
+        localStorage.getItem("studentEmail") ||
+        localStorage.getItem("email") ||
+        ""
+    ).trim().toLowerCase();
+}
+
+function getCurrentStudentName(){
+
+    return (
+        localStorage.getItem("studentName") ||
+        localStorage.getItem("student") ||
+        "Student"
+    );
+}
+
+/* ---------- DATE ---------- */
+
+function formatDate(value){
+
+    if(!value) return "Just now";
+
+    const date = new Date(value);
+
+    if(isNaN(date.getTime())){
+        return String(value);
+    }
+
+    return date.toLocaleString("en-IN",{
+        day:"2-digit",
+        month:"short",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+    });
+}
+
+/* ---------- ICON ---------- */
+
+function getIcon(notification){
+
+    const type = String(
+        notification.type ||
+        notification.category ||
+        ""
+    ).toLowerCase();
+
+    const title = String(
+        notification.title || ""
+    ).toLowerCase();
+
+    const message = String(
+        notification.message ||
+        notification.text ||
+        ""
+    ).toLowerCase();
+
+    const combined = type + " " + title + " " + message;
+
+    if(combined.includes("reply")){
+        return "💬";
+    }
+
+    if(combined.includes("resolved")){
+        return "✅";
+    }
+
+    if(combined.includes("pending")){
+        return "⏳";
+    }
+
+    if(combined.includes("open") || combined.includes("created")){
+        return "🎫";
+    }
+
+    if(combined.includes("assigned")){
+        return "👤";
+    }
+
+    return "🔔";
+}
+
+/* ---------- STUDENT FILTER ---------- */
+
+function belongsToCurrentStudent(notification){
+
+    const email = getCurrentStudentEmail();
+
+    if(!email){
+        return true;
+    }
+
+    const notificationEmail = (
+        notification.studentEmail ||
+        notification.email ||
+        ""
+    ).trim().toLowerCase();
+
+    /*
+       If notification has an email,
+       only show matching student's notification.
+    */
+    if(notificationEmail){
+        return notificationEmail === email;
+    }
+
+    /*
+       Older notifications without email
+       remain visible for compatibility.
+    */
+    return true;
+}
+
+/* ---------- RENDER ---------- */
+
+function renderNotifications(){
+
+    let notifications = getNotifications();
+
+    notifications = notifications
+        .filter(belongsToCurrentStudent)
+        .sort((a,b)=>{
+
+            const dateA = new Date(
+                a.createdAt ||
+                a.date ||
+                a.timestamp ||
+                0
+            ).getTime();
+
+            const dateB = new Date(
+                b.createdAt ||
+                b.date ||
+                b.timestamp ||
+                0
+            ).getTime();
+
+            return dateB - dateA;
+        });
+
+    if(currentFilter === "unread"){
+        notifications = notifications.filter(
+            n => n.read !== true
+        );
+    }
+
+    if(currentFilter === "read"){
+        notifications = notifications.filter(
+            n => n.read === true
+        );
+    }
+
+    const container =
+        document.getElementById("notificationList");
+
+    if(notifications.length === 0){
+
+        container.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">🔔</div>
+                <h3>No notifications</h3>
+                <p style="margin-top:8px;">
+                    You're all caught up!
+                </p>
+            </div>
+        `;
+
+        updateBadge();
+        return;
+    }
+
+    container.innerHTML = notifications.map(notification => {
+
+        const id = notification.id ||
+                   notification.notificationId ||
+                   "";
+
+        const title =
+            notification.title ||
+            "Help Desk Notification";
+
+        const message =
+            notification.message ||
+            notification.text ||
+            "You have a new update.";
+
+        const date =
+            notification.createdAt ||
+            notification.date ||
+            notification.timestamp;
+
+        const unread =
+            notification.read !== true;
+
+        const ticketId =
+            notification.ticketId ||
+            notification.ticket ||
+            "";
+
+        return `
+            <div class="notification ${unread ? "unread" : ""}">
+
+                <div class="icon">
+                    ${getIcon(notification)}
+                </div>
+
+                <div class="content">
+
+                    <div class="notification-title">
+                        ${escapeHTML(title)}
+
+                        ${
+                            unread
+                            ? `<span class="badge">NEW</span>`
+                            : ""
+                        }
+                    </div>
+
+                    <div class="notification-message">
+                        ${escapeHTML(message)}
+                    </div>
+
+                    ${
+                        ticketId
+                        ? `
+                        <div style="
+                            margin-top:7px;
+                            font-size:12px;
+                            color:#2563eb;
+                            font-weight:700;
+                        ">
+                            Ticket: ${escapeHTML(ticketId)}
+                        </div>
+                        `
+                        : ""
+                    }
+
+                    <div class="notification-time">
+                        ${formatDate(date)}
+                    </div>
+
+                </div>
+
+                ${
+                    unread
+                    ? `
+                    <button
+                        class="mark-btn"
+                        onclick="markRead('${escapeJS(id)}')">
+                        Mark Read
+                    </button>
+                    `
+                    : ""
+                }
+
+            </div>
+        `;
+
+    }).join("");
+
+    updateBadge();
+}
+
+/* ---------- MARK READ ---------- */
+
+function markRead(id){
+
+    const notifications = getNotifications();
+
+    notifications.forEach(notification => {
+
+        const notificationId =
+            notification.id ||
+            notification.notificationId ||
+            "";
+
+        if(String(notificationId) === String(id)){
+            notification.read = true;
+        }
+
+    });
+
+    saveNotifications(notifications);
+    renderNotifications();
+}
+
+function markAllRead(){
+
+    const notifications = getNotifications();
+
+    const email = getCurrentStudentEmail();
+
+    notifications.forEach(notification => {
+
+        const notificationEmail = (
+            notification.studentEmail ||
+            notification.email ||
+            ""
+        ).trim().toLowerCase();
+
+        if(
+            !email ||
+            !notificationEmail ||
+            notificationEmail === email
+        ){
+            notification.read = true;
+        }
+
+    });
+
+    saveNotifications(notifications);
+    renderNotifications();
+}
+
+/* ---------- FILTER ---------- */
+
+function setFilter(filter,button){
+
+    currentFilter = filter;
+
+    document
+        .querySelectorAll(".filter-buttons button")
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+
+    renderNotifications();
+}
+
+/* ---------- BADGE ---------- */
+
+function updateBadge(){
+
+    const notifications = getNotifications();
+
+    const email = getCurrentStudentEmail();
+
+    const unread = notifications.filter(notification => {
+
+        if(notification.read === true){
+            return false;
+        }
+
+        const notificationEmail = (
+            notification.studentEmail ||
+            notification.email ||
+            ""
+        ).trim().toLowerCase();
+
+        if(!email || !notificationEmail){
+            return true;
+        }
+
+        return notificationEmail === email;
+
+    }).length;
+
+    const badge =
+        document.getElementById("navBadge");
+
+    if(unread > 0){
+
+        badge.style.display = "inline-flex";
+        badge.textContent =
+            unread > 99 ? "99+" : unread;
+
+    }else{
+
+        badge.style.display = "none";
+
+    }
+}
+
+/* ---------- SECURITY HELPERS ---------- */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+function escapeJS(value){
+
+    return String(value ?? "")
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'");
+}
+
+/* ---------- PROFILE ---------- */
+
+function loadProfile(){
+
+    const name = getCurrentStudentName();
+
+    document.getElementById("studentName")
+        .textContent = name;
+
+    document.getElementById("avatar")
+        .textContent =
+        name.charAt(0).toUpperCase();
+}
+
+/* ---------- LIVE SYNC ---------- */
+
+window.addEventListener("storage",function(event){
+
+    if(event.key === NOTIFICATION_KEY){
+        renderNotifications();
+    }
+
+    if(
+        event.key === "studentEmail" ||
+        event.key === "studentName" ||
+        event.key === "email"
+    ){
+        loadProfile();
+        renderNotifications();
+    }
+
+});
+
+/* ---------- START ---------- */
+
+loadProfile();
+renderNotifications();
+
+/* Auto refresh */
+setInterval(()=>{
+    renderNotifications();
+},2000);
+
+</script>
+
+</body>
+</html>

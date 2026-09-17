@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HOI Dashboard | AI Student Help Desk</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+
+            width: 250px;
+            height: 100vh;
+
+            background: linear-gradient(
+                180deg,
+                #111827,
+                #064e3b
+            );
+
+            color: white;
+
+            padding: 25px 18px;
+
+            display: flex;
+            flex-direction: column;
+
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 35px;
+        }
+
+        .logo span {
+            color: #6ee7b7;
+        }
+
+        /* =========================
+           NAV
+        ========================= */
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #d1fae5;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            display: block;
+
+            transition: 0.25s ease;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.14);
+            color: white;
+
+            transform: translateX(2px);
+        }
+
+        /* =========================
+           LOGOUT NAV LINK
+        ========================= */
+
+        .logout-link {
+            margin-top: auto !important;
+            color: #fecaca !important;
+        }
+
+        .logout-link:hover {
+            background: rgba(220, 38, 38, 0.20) !important;
+            color: white !important;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            margin-left: 250px;
+            padding: 25px;
+        }
+
+        /* =========================
+           TOPBAR
+        ========================= */
+
+        .topbar {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 25px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        .title {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           PROFILE
+        ========================= */
+
+        .profile {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+
+            border-radius: 50%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #059669,
+                    #0f766e
+                );
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+
+            padding: 20px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        .label {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .value {
+            font-size: 30px;
+            font-weight: 800;
+            margin-top: 9px;
+        }
+
+        /* =========================
+           GRID
+        ========================= */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        .card h3 {
+            margin-bottom: 18px;
+        }
+
+        /* =========================
+           RATE
+        ========================= */
+
+        .big-rate {
+            font-size: 50px;
+            font-weight: 800;
+            color: #059669;
+        }
+
+        .progress {
+            height: 10px;
+
+            background: #e2e8f0;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            margin-top: 15px;
+        }
+
+        .progress div {
+            height: 100%;
+            background: #059669;
+
+            transition: width 0.4s ease;
+        }
+
+        /* =========================
+           ITEMS
+        ========================= */
+
+        .item {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            padding: 14px;
+
+            background: #f8fafc;
+
+            border-radius: 12px;
+
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            background: #d1fae5;
+
+            color: #047857;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+                height: auto;
+
+                padding: 20px;
+            }
+
+            .logout-link {
+                margin-top: 10px !important;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .topbar {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            🎓 AI <span>Help Desk</span>
+        </div>
+
+
+        <nav class="nav">
+
+            <a
+                href="hoi-dashboard.html"
+                class="active"
+            >
+                🏠 HOI Dashboard
+            </a>
+
+
+            <a href="admin-tickets.html">
+                🎫 All Tickets
+            </a>
+
+
+            <a href="admin-reports.html">
+                📊 Reports
+            </a>
+
+
+            <a href="knowledge-base.html">
+                📚 Knowledge Base
+            </a>
+
+
+            <!-- LOGOUT -->
+
+            <a
+                href="login.html"
+                class="logout-link"
+                onclick="logout(event)"
+            >
+                🚪 Logout
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+
+                <div class="title">
+                    HOI Dashboard
+                </div>
+
+                <div class="subtitle">
+                    Institution-wide student help desk overview.
+                </div>
+
+            </div>
+
+
+            <div class="profile">
+
+                <div
+                    class="avatar"
+                    id="avatar"
+                >
+                    H
+                </div>
+
+
+                <div>
+
+                    <strong id="hoiName">
+                        Head of Institution
+                    </strong>
+
+                    <div
+                        style="
+                            font-size:12px;
+                            color:#64748b;
+                        "
+                    >
+                        Institution Administration
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =========================
+             STATS
+        ========================= -->
+
+        <section class="stats">
+
+
+            <div class="stat">
+
+                <div class="label">
+                    TOTAL TICKETS
+                </div>
+
+                <div
+                    class="value"
+                    id="total"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="label">
+                    OPEN
+                </div>
+
+                <div
+                    class="value"
+                    id="open"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="label">
+                    PENDING
+                </div>
+
+                <div
+                    class="value"
+                    id="pending"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="label">
+                    RESOLVED
+                </div>
+
+                <div
+                    class="value"
+                    id="resolved"
+                >
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="label">
+                    HIGH PRIORITY
+                </div>
+
+                <div
+                    class="value"
+                    id="high"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             DASHBOARD GRID
+        ========================= -->
+
+        <section class="grid">
+
+
+            <!-- RESOLUTION RATE -->
+
+            <div class="card">
+
+                <h3>
+                    Institution Resolution Rate
+                </h3>
+
+
+                <div
+                    class="big-rate"
+                    id="rate"
+                >
+                    0%
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        id="rateBar"
+                        style="width:0%"
+                    ></div>
+
+                </div>
+
+
+                <p
+                    style="
+                        color:#64748b;
+                        font-size:13px;
+                        margin-top:12px;
+                    "
+                >
+                    Overall percentage of resolved
+                    student support tickets.
+                </p>
+
+            </div>
+
+
+
+            <!-- CURRENT STATUS -->
+
+            <div class="card">
+
+                <h3>
+                    Current Ticket Status
+                </h3>
+
+
+                <div class="item">
+
+                    <span>
+                        Active Tickets
+                    </span>
+
+                    <span
+                        class="badge"
+                        id="active"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span>
+                        Resolved
+                    </span>
+
+                    <span
+                        class="badge"
+                        id="resolved2"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span>
+                        High Priority
+                    </span>
+
+                    <span
+                        class="badge"
+                        id="high2"
+                    >
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- DEPARTMENTS -->
+
+            <div class="card">
+
+                <h3>
+                    Department / Category Overview
+                </h3>
+
+                <div id="departments"></div>
+
+            </div>
+
+
+
+            <!-- SYSTEM -->
+
+            <div class="card">
+
+                <h3>
+                    System Information
+                </h3>
+
+
+                <div class="item">
+
+                    <span>
+                        Help Desk Status
+                    </span>
+
+                    <span class="badge">
+                        Active
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span>
+                        AI Chatbot
+                    </span>
+
+                    <span class="badge">
+                        Online
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span>
+                        Ticket System
+                    </span>
+
+                    <span class="badge">
+                        Connected
+                    </span>
+
+                </div>
+
+
+                <div class="item">
+
+                    <span>
+                        Knowledge Base
+                    </span>
+
+                    <span class="badge">
+                        Available
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <script>
+
+        const TICKET_KEY = "tickets";
+
+
+        /* =========================
+           GET TICKETS
+        ========================= */
+
+        function getTickets() {
+
+            try {
+
+                const data =
+                    JSON.parse(
+                        localStorage.getItem(
+                            TICKET_KEY
+                        ) || "[]"
+                    );
+
+                return Array.isArray(data)
+                    ? data
+                    : [];
+
+            } catch (error) {
+
+                return [];
+
+            }
+
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        function getStatus(value) {
+
+            const s =
+                String(
+                    value || "Open"
+                ).toLowerCase();
+
+
+            if (
+                s === "resolved" ||
+                s === "closed"
+            ) {
+
+                return "Resolved";
+
+            }
+
+
+            if (
+                s === "pending" ||
+                s === "in progress"
+            ) {
+
+                return "Pending";
+
+            }
+
+
+            return "Open";
+
+        }
+
+
+        /* =========================
+           RENDER
+        ========================= */
+
+        function render() {
+
+            const tickets =
+                getTickets();
+
+
+            let open = 0;
+            let pending = 0;
+            let resolved = 0;
+            let high = 0;
+
+
+            const departments = {};
+
+
+            tickets.forEach(function(ticket) {
+
+                const ticketStatus =
+                    getStatus(
+                        ticket.status
+                    );
+
+
+                if (
+                    ticketStatus === "Open"
+                ) {
+                    open++;
+                }
+
+
+                if (
+                    ticketStatus === "Pending"
+                ) {
+                    pending++;
+                }
+
+
+                if (
+                    ticketStatus === "Resolved"
+                ) {
+                    resolved++;
+                }
+
+
+                if (
+                    String(
+                        ticket.priority || ""
+                    ).toLowerCase() === "high"
+                ) {
+                    high++;
+                }
+
+
+                const department =
+                    ticket.department ||
+                    ticket.dept ||
+                    ticket.category ||
+                    "General";
+
+
+                departments[department] =
+                    (
+                        departments[department] ||
+                        0
+                    ) + 1;
+
+            });
+
+
+            const total =
+                tickets.length;
+
+
+            document.getElementById(
+                "total"
+            ).textContent =
+                total;
+
+
+            document.getElementById(
+                "open"
+            ).textContent =
+                open;
+
+
+            document.getElementById(
+                "pending"
+            ).textContent =
+                pending;
+
+
+            document.getElementById(
+                "resolved"
+            ).textContent =
+                resolved;
+
+
+            document.getElementById(
+                "high"
+            ).textContent =
+                high;
+
+
+            const active =
+                open + pending;
+
+
+            const rate =
+                total
+                    ? Math.round(
+                        (
+                            resolved /
+                            total
+                        ) * 100
+                    )
+                    : 0;
+
+
+            document.getElementById(
+                "active"
+            ).textContent =
+                active;
+
+
+            document.getElementById(
+                "resolved2"
+            ).textContent =
+                resolved;
+
+
+            document.getElementById(
+                "high2"
+            ).textContent =
+                high;
+
+
+            document.getElementById(
+                "rate"
+            ).textContent =
+                rate + "%";
+
+
+            document.getElementById(
+                "rateBar"
+            ).style.width =
+                rate + "%";
+
+
+
+            /* =========================
+               DEPARTMENTS
+            ========================= */
+
+            const container =
+                document.getElementById(
+                    "departments"
+                );
+
+
+            const entries =
+                Object.entries(
+                    departments
+                ).sort(
+                    function(a, b) {
+                        return b[1] - a[1];
+                    }
+                );
+
+
+            if (!entries.length) {
+
+                container.innerHTML = `
+                    <p style="color:#64748b;">
+                        No ticket data available.
+                    </p>
+                `;
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                entries.map(
+                    function(entry) {
+
+                        const name =
+                            entry[0];
+
+                        const count =
+                            entry[1];
+
+
+                        return `
+                            <div class="item">
+
+                                <span>
+                                    ${escapeHTML(name)}
+                                </span>
+
+                                <span class="badge">
+                                    ${count}
+                                </span>
+
+                            </div>
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+
+        /* =========================
+           ESCAPE HTML
+        ========================= */
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        /* =========================
+           LOAD USER
+        ========================= */
+
+        function loadCurrentUser() {
+
+            try {
+
+                const user =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "currentUser"
+                        ) || "null"
+                    );
+
+
+                if (
+                    user &&
+                    user.name
+                ) {
+
+                    document.getElementById(
+                        "hoiName"
+                    ).textContent =
+                        user.name;
+
+
+                    document.getElementById(
+                        "avatar"
+                    ).textContent =
+                        user.name
+                            .charAt(0)
+                            .toUpperCase();
+
+                }
+
+            } catch (error) {
+
+                console.log(
+                    "No current user found."
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           LOGOUT
+        ========================= */
+
+        function logout(event) {
+
+            /*
+                Stop the <a> from
+                immediately opening login.html.
+            */
+
+            if (event) {
+                event.preventDefault();
+            }
+
+
+            const confirmLogout =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmLogout) {
+                return;
+            }
+
+
+            /*
+                Clear only session data.
+                Tickets remain safe.
+            */
+
+            localStorage.removeItem(
+                "currentUser"
+            );
+
+            localStorage.removeItem(
+                "currentUserEmail"
+            );
+
+            localStorage.removeItem(
+                "currentUserRole"
+            );
+
+            localStorage.removeItem(
+                "studentEmail"
+            );
+
+            localStorage.removeItem(
+                "studentName"
+            );
+
+
+            /*
+                Redirect to login.
+            */
+
+            window.location.replace(
+                "login.html"
+            );
+
+        }
+
+
+        /* =========================
+           STORAGE SYNC
+        ========================= */
+
+        window.addEventListener(
+            "storage",
+            function(event) {
+
+                if (
+                    event.key === TICKET_KEY
+                ) {
+
+                    render();
+
+                }
+
+            }
+        );
+
+
+        /* =========================
+           START
+        ========================= */
+
+        loadCurrentUser();
+
+        render();
+
+
+        setInterval(
+            render,
+            3000
+        );
+
+    </script>
+
+</body>
+
+</html>

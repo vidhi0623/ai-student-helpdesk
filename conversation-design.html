@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation Design | AI Student Help Desk</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            padding: 22px 15px;
+            background: linear-gradient(180deg, #111827, #172554);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .logo-text h2 {
+            font-size: 17px;
+        }
+
+        .logo-text p {
+            margin-top: 3px;
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .menu {
+            margin-top: 25px;
+        }
+
+        .menu-title {
+            padding: 0 13px;
+            margin-bottom: 10px;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 10px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav a.active {
+            background: rgba(99,102,241,0.25);
+            color: white;
+            box-shadow: inset 3px 0 0 #818cf8;
+        }
+
+        .nav-icon {
+            width: 22px;
+            text-align: center;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            color: #111827;
+        }
+
+        .topbar p {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .demo-label {
+            padding: 9px 13px;
+            border-radius: 30px;
+            background: #eef2ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .hero {
+            padding: 28px;
+            border-radius: 18px;
+            color: white;
+            background: linear-gradient(135deg, #4338ca, #7c3aed);
+            margin-bottom: 25px;
+        }
+
+        .hero h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            max-width: 850px;
+            color: #e0e7ff;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-heading {
+            margin-bottom: 14px;
+        }
+
+        .section-heading h2 {
+            font-size: 20px;
+            color: #111827;
+        }
+
+        .section-heading p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 5px 18px rgba(15,23,42,0.04);
+        }
+
+        .flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .flow-step {
+            width: min(100%, 700px);
+            padding: 15px 18px;
+            border: 1px solid #c7d2fe;
+            border-radius: 12px;
+            background: #eef2ff;
+            text-align: center;
+        }
+
+        .flow-step strong {
+            display: block;
+            color: #312e81;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .flow-step span {
+            color: #4338ca;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .flow-step.success {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+        }
+
+        .flow-step.success strong,
+        .flow-step.success span {
+            color: #065f46;
+        }
+
+        .flow-step.warning {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        .flow-step.warning strong,
+        .flow-step.warning span {
+            color: #9a3412;
+        }
+
+        .arrow {
+            color: #64748b;
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .branch {
+            width: min(100%, 700px);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .branch .flow-step {
+            width: 100%;
+        }
+
+        .conversation {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .message {
+            max-width: 82%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        .message .speaker {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #eef2ff;
+            color: #312e81;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.student {
+            align-self: flex-end;
+            background: #e0f2fe;
+            color: #075985;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.system {
+            align-self: center;
+            max-width: 100%;
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px dashed #d1d5db;
+            text-align: center;
+        }
+
+        .message.system .speaker {
+            color: #6b7280;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            vertical-align: top;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        td strong {
+            color: #111827;
+        }
+
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .agent-card {
+            background: white;
+            border: 1px solid #e8edf5;
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .agent-card h3 {
+            font-size: 15px;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .agent-card p {
+            color: #6b7280;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .agent-number {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-weight: 800;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .note {
+            margin-top: 15px;
+            padding: 14px 16px;
+            border-left: 4px solid #6366f1;
+            border-radius: 8px;
+            background: #eef2ff;
+            color: #3730a3;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            padding: 18px 0 5px;
+            color: #9ca3af;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 1100px) {
+            .agent-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 8px 5px 20px;
+            }
+
+            .logo-text,
+            .menu-title,
+            .menu-text {
+                display: none;
+            }
+
+            .nav a {
+                justify-content: center;
+                padding: 13px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero h2 {
+                font-size: 20px;
+            }
+
+            .branch,
+            .agent-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🤖</div>
+            <div class="logo-text">
+                <h2>AI Help Desk</h2>
+                <p>Admin Portal</p>
+            </div>
+        </div>
+
+        <div class="menu">
+            <div class="menu-title">Main</div>
+
+            <nav class="nav">
+                <a href="admin-dashboard.html">
+                    <span class="nav-icon">🏠</span>
+                    <span class="menu-text">Dashboard</span>
+                </a>
+
+                <a href="admin-tickets.html">
+                    <span class="nav-icon">🎫</span>
+                    <span class="menu-text">Manage Tickets</span>
+                </a>
+
+                <a href="notifications.html">
+                    <span class="nav-icon">🔔</span>
+                    <span class="menu-text">Notifications</span>
+                </a>
+
+                <a href="admin-reports.html">
+                    <span class="nav-icon">📊</span>
+                    <span class="menu-text">Reports</span>
+                </a>
+
+                <a href="knowledge-base.html">
+                    <span class="nav-icon">📚</span>
+                    <span class="menu-text">Knowledge Base</span>
+                </a>
+
+                <a href="cloud-architecture.html">
+                    <span class="nav-icon">☁️</span>
+                    <span class="menu-text">Cloud Architecture</span>
+                </a>
+
+                <a href="conversation-design.html" class="active">
+                    <span class="nav-icon">💬</span>
+                    <span class="menu-text">Conversation Design</span>
+                </a>
+
+                <a href="login.html" onclick="logout(event)">
+                    <span class="nav-icon">🚪</span>
+                    <span class="menu-text">Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+
+    <main class="main">
+
+        <header class="topbar">
+            <div>
+                <h1>Conversation Design</h1>
+                <p>Chatbot flow, sample dialogue, and multi-agent responsibilities.</p>
+            </div>
+
+            <span class="demo-label">Conversation Blueprint</span>
+        </header>
+
+
+        <section class="hero">
+            <h2>Student Help Desk Chatbot</h2>
+            <p>
+                Conversation design defines how the chatbot greets students,
+                understands their questions, asks clarifying questions, retrieves
+                approved information, and offers ticket creation when needed.
+                The chatbot should communicate clearly, avoid guessing, and explain
+                the next step to the student.
+            </p>
+        </section>
+
+
+        <!-- CONVERSATION FLOW -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>1. Conversation Flow</h2>
+                <p>
+                    The flow below describes the intended chatbot conversation,
+                    including answer retrieval and ticket escalation.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="flow">
+
+                    <div class="flow-step">
+                        <strong>1. Student opens the chatbot</strong>
+                        <span>The chatbot starts a new support conversation.</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="flow-step">
+                        <strong>2. Greeting and question</strong>
+                        <span>The bot greets the student and asks how it can help.</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="flow-step">
+                        <strong>3. Intent Recognition + Entity Extraction</strong>
+                        <span>Identify the topic and important details in the student's message.</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="flow-step">
+                        <strong>4. Knowledge Retrieval</strong>
+                        <span>Search the approved knowledge base for a relevant answer.</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="branch">
+                        <div class="flow-step success">
+                            <strong>Suitable answer found</strong>
+                            <span>Show the answer and ask whether it helped.</span>
+                        </div>
+
+                        <div class="flow-step warning">
+                            <strong>No suitable answer</strong>
+                            <span>Ask a clarifying question or offer ticket creation.</span>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="branch">
+                        <div class="flow-step success">
+                            <strong>Student is satisfied</strong>
+                            <span>End the conversation politely.</span>
+                        </div>
+
+                        <div class="flow-step warning">
+                            <strong>Student needs more help</strong>
+                            <span>Collect the details required to create a support ticket.</span>
+                        </div>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="flow-step">
+                        <strong>5. Ticket creation and routing</strong>
+                        <span>Save the ticket, identify the responsible department, and notify the relevant team.</span>
+                    </div>
+
+                    <div class="arrow">↓</div>
+
+                    <div class="flow-step success">
+                        <strong>6. Confirmation and tracking</strong>
+                        <span>Show the ticket ID and direct the student to My Tickets.</span>
+                    </div>
+
+                </div>
+
+                <div class="note">
+                    If the student's request is unclear, the chatbot should ask a
+                    short clarifying question instead of inventing an answer.
+                </div>
+            </div>
+        </section>
+
+
+        <!-- SAMPLE CONVERSATION -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>2. Sample Conversation: Semester Examination</h2>
+                <p>
+                    Example dialogue for a student asking about an examination
+                    hall ticket.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="conversation">
+
+                    <div class="message bot">
+                        <span class="speaker">Chatbot</span>
+                        Hello! Welcome to the AI Student Help Desk. How can I help you today?
+                    </div>
+
+                    <div class="message student">
+                        <span class="speaker">Student</span>
+                        I have a question about my semester examination.
+                    </div>
+
+                    <div class="message bot">
+                        <span class="speaker">Chatbot</span>
+                        I can help with that. Is your question about the exam timetable,
+                        hall ticket, examination rules, or result?
+                    </div>
+
+                    <div class="message student">
+                        <span class="speaker">Student</span>
+                        Hall ticket.
+                    </div>
+
+                    <div class="message system">
+                        <span class="speaker">System process</span>
+                        Intent identified: Examination · Entity identified: Hall ticket
+                    </div>
+
+                    <div class="message bot">
+                        <span class="speaker">Chatbot</span>
+                        Please check the examination section of your student portal
+                        for hall-ticket information. If you cannot find it or need
+                        further help, I can create a support ticket.
+                    </div>
+
+                    <div class="message student">
+                        <span class="speaker">Student</span>
+                        I still need help. Create a ticket.
+                    </div>
+
+                    <div class="message bot">
+                        <span class="speaker">Chatbot</span>
+                        Sure. Please provide a short description of the issue and
+                        confirm the department if it is not already identified.
+                    </div>
+
+                    <div class="message student">
+                        <span class="speaker">Student</span>
+                        I cannot find my hall ticket. Examination department.
+                    </div>
+
+                    <div class="message system">
+                        <span class="speaker">System process</span>
+                        Ticket details are prepared and saved after the student confirms.
+                    </div>
+
+                    <div class="message bot">
+                        <span class="speaker">Chatbot</span>
+                        Your support ticket has been created. You can view its status
+                        and replies in the My Tickets section.
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- AGENT RESPONSIBILITIES -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>3. Multi-Agent Responsibilities</h2>
+                <p>
+                    Each agent performs a focused task within the overall help desk
+                    conversation.
+                </p>
+            </div>
+
+            <div class="agent-grid">
+
+                <article class="agent-card">
+                    <div class="agent-number">01</div>
+                    <h3>Intent Recognition Agent</h3>
+                    <p>
+                        Determines the student's main request, such as examination,
+                        fees, scholarship, placement, library, hostel, or login help.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">02</div>
+                    <h3>Entity Extraction Agent</h3>
+                    <p>
+                        Extracts useful details such as semester, subject, department,
+                        ticket number, or the specific service mentioned.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">03</div>
+                    <h3>Knowledge Retrieval Agent</h3>
+                    <p>
+                        Searches approved help articles and returns relevant
+                        information for the chatbot to present.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">04</div>
+                    <h3>Decision Agent</h3>
+                    <p>
+                        Decides whether to show an answer, ask a clarification,
+                        or offer escalation to a human support team.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">05</div>
+                    <h3>Ticket Management Agent</h3>
+                    <p>
+                        Creates and updates support tickets, maintains status,
+                        and makes ticket details available to authorized users.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">06</div>
+                    <h3>Faculty Routing Agent</h3>
+                    <p>
+                        Routes a ticket to the appropriate department or assigned
+                        faculty member using configured routing rules.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">07</div>
+                    <h3>Email Notification Agent</h3>
+                    <p>
+                        Sends or prepares notifications about ticket creation,
+                        assignment, replies, and status changes.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">08</div>
+                    <h3>Learning / Knowledge Update Agent</h3>
+                    <p>
+                        Identifies useful unresolved questions for review. New
+                        knowledge should be approved before being published.
+                    </p>
+                </article>
+
+                <article class="agent-card">
+                    <div class="agent-number">09</div>
+                    <h3>Analytics Agent</h3>
+                    <p>
+                        Summarizes ticket volume, categories, response patterns,
+                        and common unresolved issues for authorized staff.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+
+        <!-- FALLBACK AND CLARIFICATION -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>4. Clarification and Fallback Rules</h2>
+                <p>
+                    These rules help keep the chatbot useful when a message is
+                    incomplete or the knowledge base has no matching answer.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Situation</th>
+                                <th>Chatbot response</th>
+                                <th>Next action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>Question is too broad</td>
+                                <td>Ask the student to select or specify the topic.</td>
+                                <td>Run intent recognition again after clarification.</td>
+                            </tr>
+
+                            <tr>
+                                <td>Required detail is missing</td>
+                                <td>Ask one focused question, such as which semester or department.</td>
+                                <td>Use the additional detail to search or route the request.</td>
+                            </tr>
+
+                            <tr>
+                                <td>No relevant knowledge article</td>
+                                <td>Explain that a suitable answer was not found.</td>
+                                <td>Offer ticket creation or human support.</td>
+                            </tr>
+
+                            <tr>
+                                <td>Student is not satisfied</td>
+                                <td>Ask whether they want to explain the issue further or create a ticket.</td>
+                                <td>Continue the conversation or escalate.</td>
+                            </tr>
+
+                            <tr>
+                                <td>Ticket details are incomplete</td>
+                                <td>Ask for the missing required information before submission.</td>
+                                <td>Show a confirmation before saving the ticket.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- CONVERSATION PRINCIPLES -->
+
+        <section class="section">
+            <div class="section-heading">
+                <h2>5. Conversation Design Principles</h2>
+                <p>
+                    The chatbot should make each interaction understandable,
+                    consistent, and easy to complete.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Principle</th>
+                                <th>How it is applied</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td><strong>Clear language</strong></td>
+                                <td>Use short sentences and familiar student-support terms.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>One question at a time</strong></td>
+                                <td>Ask only for the detail needed to continue the current step.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Transparent responses</strong></td>
+                                <td>Do not claim that a ticket was created unless it was actually saved.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Human escalation</strong></td>
+                                <td>Provide a ticket or staff-support option when the bot cannot resolve the issue.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Privacy</strong></td>
+                                <td>Request only information required for support and restrict access to ticket details.</td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>Consistent confirmation</strong></td>
+                                <td>After ticket creation, show the ticket ID and explain how to track it.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="note">
+                    The dialogue on this page is a design example. It does not
+                    automatically run inside the existing chatbot page unless
+                    the chatbot logic is separately connected to these flows.
+                </div>
+            </div>
+        </section>
+
+
+        <footer class="footer">
+            AI Student Help Desk System · Conversation Design
+        </footer>
+
+    </main>
+
+
+    <script>
+        function logout(event) {
+            event.preventDefault();
+
+            const confirmed = confirm("Are you sure you want to logout?");
+
+            if (!confirmed) {
+                return;
+            }
+
+            localStorage.removeItem("currentUser");
+            localStorage.removeItem("currentUserEmail");
+            localStorage.removeItem("currentUserRole");
+            localStorage.removeItem("studentEmail");
+            localStorage.removeItem("studentName");
+
+            window.location.href = "login.html";
+        }
+    </script>
+
+</body>
+</html>

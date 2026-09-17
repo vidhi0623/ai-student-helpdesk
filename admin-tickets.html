@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Tickets | AI Help Desk</title>
+
+```
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: #f4f7fb;
+        color: #1f2937;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 250px;
+        height: 100vh;
+        background: #111827;
+        color: white;
+        padding: 25px 15px;
+        z-index: 1000;
+    }
+
+    .logo {
+        text-align: center;
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .menu {
+        list-style: none;
+    }
+
+    .menu li {
+        margin-bottom: 8px;
+    }
+
+    .menu a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 13px 15px;
+        color: #d1d5db;
+        text-decoration: none;
+        border-radius: 9px;
+        transition: 0.2s;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .menu-icon {
+        width: 24px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    /* MAIN */
+    .main {
+        margin-left: 250px;
+        padding: 30px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        font-size: 30px;
+        margin-bottom: 7px;
+    }
+
+    .subtitle {
+        color: #6b7280;
+    }
+
+    /* MESSAGE */
+    .message {
+        display: none;
+        padding: 14px 18px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    /* FILTER */
+    .filter-box {
+        background: white;
+        padding: 22px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .filter-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .filters {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 12px;
+    }
+
+    .filters input,
+    .filters select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+        background: white;
+    }
+
+    .filters input:focus,
+    .filters select:focus {
+        border-color: #2563eb;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    .clear-btn {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #64748b;
+        color: white;
+        font-weight: 600;
+    }
+
+    .clear-btn:hover {
+        background: #475569;
+    }
+
+    /* SUMMARY */
+    .top-bar {
+        background: white;
+        padding: 18px 22px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .ticket-summary {
+        font-size: 15px;
+    }
+
+    .count {
+        color: #2563eb;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .refresh-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 11px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .refresh-btn:hover {
+        background: #1d4ed8;
+    }
+
+    /* TABLE */
+    .table-container {
+        background: white;
+        border-radius: 15px;
+        overflow-x: auto;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    table {
+        width: 100%;
+        min-width: 1450px;
+        border-collapse: collapse;
+    }
+
+    th,
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+        vertical-align: top;
+    }
+
+    th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    td {
+        font-size: 14px;
+    }
+
+    tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    .ticket-id {
+        color: #2563eb;
+        font-weight: 700;
+    }
+
+    .description {
+        max-width: 250px;
+        line-height: 1.5;
+        color: #4b5563;
+    }
+
+    /* STATUS */
+    .status-select {
+        width: 125px;
+        padding: 9px;
+        border-radius: 7px;
+        border: 2px solid #cbd5e1;
+        background: white;
+        outline: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .status-select:focus {
+        border-color: #2563eb;
+    }
+
+    .status-badge {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .open {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .pending {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .resolved {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    /* ASSIGN */
+    .assign-input {
+        width: 160px;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        outline: none;
+    }
+
+    .assign-input:focus {
+        border-color: #2563eb;
+    }
+
+    /* REPLY */
+    .reply-area {
+        width: 270px;
+    }
+
+    .reply-area textarea {
+        width: 100%;
+        min-height: 90px;
+        padding: 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        resize: vertical;
+        outline: none;
+    }
+
+    .reply-area textarea:focus {
+        border-color: #7c3aed;
+    }
+
+    .reply-btn {
+        margin-top: 8px;
+        padding: 10px 14px;
+        border: none;
+        border-radius: 7px;
+        background: #7c3aed;
+        color: white;
+        font-weight: 600;
+    }
+
+    .reply-btn:hover {
+        background: #6d28d9;
+    }
+
+    .last-reply {
+        margin-top: 10px;
+        padding: 10px;
+        background: #f5f3ff;
+        border-left: 3px solid #7c3aed;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    /* SAVE */
+    .save-btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 7px;
+        background: #16a34a;
+        color: white;
+        font-weight: 600;
+    }
+
+    .save-btn:hover {
+        background: #15803d;
+    }
+
+    /* EMPTY */
+    .empty {
+        padding: 60px 20px;
+        text-align: center;
+        color: #6b7280;
+        line-height: 1.7;
+    }
+
+    .empty-icon {
+        font-size: 45px;
+        margin-bottom: 10px;
+    }
+
+    /* MOBILE */
+    @media (max-width: 1000px) {
+        .filters {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .sidebar {
+            width: 70px;
+            padding: 20px 10px;
+        }
+
+        .logo {
+            font-size: 0;
+        }
+
+        .logo::after {
+            content: "🎓";
+            font-size: 25px;
+        }
+
+        .menu a {
+            justify-content: center;
+            padding: 13px 5px;
+        }
+
+        .menu-text {
+            display: none;
+        }
+
+        .main {
+            margin-left: 70px;
+            padding: 18px;
+        }
+
+        .page-header h1 {
+            font-size: 23px;
+        }
+
+        .filters {
+            grid-template-columns: 1fr;
+        }
+
+        .top-bar {
+            gap: 15px;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">
+        🎓 AI Help Desk
+    </div>
+
+    <ul class="menu">
+
+        <li>
+            <a href="admin-dashboard.html">
+                <span class="menu-icon">📊</span>
+                <span class="menu-text">Dashboard</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="admin-tickets.html" class="active">
+                <span class="menu-icon">🎫</span>
+                <span class="menu-text">Manage Tickets</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="notifications.html">
+                <span class="menu-icon">🔔</span>
+                <span class="menu-text">Notifications</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="admin-reports.html">
+                <span class="menu-icon">📈</span>
+                <span class="menu-text">Reports</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="login.html">
+                <span class="menu-icon">🚪</span>
+                <span class="menu-text">Logout</span>
+            </a>
+        </li>
+
+    </ul>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+    <div class="page-header">
+        <h1>🎫 Manage Student Tickets</h1>
+
+        <p class="subtitle">
+            Search, manage, assign and reply to student tickets.
+        </p>
+    </div>
+
+
+    <div id="message" class="message"></div>
+
+
+    <!-- FILTER -->
+    <div class="filter-box">
+
+        <div class="filter-title">
+            🔍 Search & Filter
+        </div>
+
+        <div class="filters">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search ticket, student, email or subject"
+            >
+
+            <select id="statusFilter">
+                <option value="">All Status</option>
+                <option value="Open">Open</option>
+                <option value="Pending">Pending</option>
+                <option value="Resolved">Resolved</option>
+            </select>
+
+            <select id="departmentFilter">
+                <option value="">All Departments</option>
+            </select>
+
+            <button
+                type="button"
+                class="clear-btn"
+                id="clearBtn"
+            >
+                ✖ Clear
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+
+        <div class="ticket-summary">
+            Showing Tickets:
+            <span id="ticketCount" class="count">0</span>
+        </div>
+
+        <button
+            type="button"
+            class="refresh-btn"
+            id="refreshBtn"
+        >
+            🔄 Refresh
+        </button>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Student</th>
+                    <th>Email</th>
+                    <th>Subject</th>
+                    <th>Department</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Admin Reply</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="ticketTable"></tbody>
+
+        </table>
+
+    </div>
+
+</main>
+
+
+<script>
+
+    /* ==========================================
+       STORAGE KEYS
+    ========================================== */
+
+    const TICKET_KEY = "tickets";
+    const NOTIFICATION_KEY = "notifications";
+
+
+    /* ==========================================
+       GET TICKETS
+    ========================================== */
+
+    function getTickets() {
+
+        try {
+
+            const data =
+                localStorage.getItem(TICKET_KEY);
+
+            if (!data) {
+                return [];
+            }
+
+            const tickets = JSON.parse(data);
+
+            return Array.isArray(tickets)
+                ? tickets
+                : [];
+
+        } catch (error) {
+
+            console.error(
+                "Error loading tickets:",
+                error
+            );
+
+            return [];
+
+        }
+
+    }
+
+
+    /* ==========================================
+       SAVE TICKETS
+    ========================================== */
+
+    function saveTickets(tickets) {
+
+        localStorage.setItem(
+            TICKET_KEY,
+            JSON.stringify(tickets)
+        );
+
+    }
+
+
+    /* ==========================================
+       GET NOTIFICATIONS
+    ========================================== */
+
+    function getNotifications() {
+
+        try {
+
+            const data =
+                localStorage.getItem(
+                    NOTIFICATION_KEY
+                );
+
+            if (!data) {
+                return [];
+            }
+
+            const notifications =
+                JSON.parse(data);
+
+            return Array.isArray(notifications)
+                ? notifications
+                : [];
+
+        } catch (error) {
+
+            return [];
+
+        }
+
+    }
+
+
+    /* ==========================================
+       SAVE NOTIFICATIONS
+    ========================================== */
+
+    function saveNotifications(notifications) {
+
+        localStorage.setItem(
+            NOTIFICATION_KEY,
+            JSON.stringify(notifications)
+        );
+
+    }
+
+
+    /* ==========================================
+       CREATE STUDENT NOTIFICATION
+    ========================================== */
+
+    function createStudentNotification(
+        ticket,
+        title,
+        notificationMessage
+    ) {
+
+        const notifications =
+            getNotifications();
+
+        notifications.push({
+
+            id:
+                "NOT-" +
+                Date.now() +
+                "-" +
+                Math.floor(
+                    Math.random() * 1000
+                ),
+
+            studentEmail:
+                ticket.email || "",
+
+            ticketId:
+                ticket.id ||
+                ticket.ticketId ||
+                "",
+
+            title:
+                title,
+
+            message:
+                notificationMessage,
+
+            type:
+                "ticket",
+
+            read:
+                false,
+
+            date:
+                new Date().toLocaleString(
+                    "en-IN"
+                )
+
+        });
+
+        saveNotifications(
+            notifications
+        );
+
+    }
+
+
+    /* ==========================================
+       ESCAPE HTML
+    ========================================== */
+
+    function escapeHTML(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent =
+            value == null
+                ? ""
+                : String(value);
+
+        return div.innerHTML;
+
+    }
+
+
+    /* ==========================================
+       STATUS CLASS
+    ========================================== */
+
+    function getStatusClass(status) {
+
+        const value =
+            String(status || "Open")
+                .toLowerCase();
+
+        if (value === "pending") {
+            return "pending";
+        }
+
+        if (value === "resolved") {
+            return "resolved";
+        }
+
+        return "open";
+
+    }
+
+
+    /* ==========================================
+       DEPARTMENT FILTER
+    ========================================== */
+
+    function updateDepartmentFilter(tickets) {
+
+        const filter =
+            document.getElementById(
+                "departmentFilter"
+            );
+
+        const currentValue =
+            filter.value;
+
+        const departments = [
+            ...new Set(
+                tickets
+                    .map(ticket =>
+                        String(
+                            ticket.department ||
+                            ticket.category ||
+                            ""
+                        ).trim()
+                    )
+                    .filter(Boolean)
+            )
+        ];
+
+        departments.sort();
+
+        filter.innerHTML =
+            '<option value="">All Departments</option>';
+
+        departments.forEach(
+            department => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    department;
+
+                option.textContent =
+                    department;
+
+                filter.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        if (
+            departments.includes(
+                currentValue
+            )
+        ) {
+
+            filter.value =
+                currentValue;
+
+        }
+
+    }
+
+
+    /* ==========================================
+       LOAD TICKETS
+    ========================================== */
+
+    function loadTickets() {
+
+        const tickets =
+            getTickets();
+
+        updateDepartmentFilter(
+            tickets
+        );
+
+
+        const searchText =
+            document
+                .getElementById(
+                    "searchInput"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+        const selectedStatus =
+            document
+                .getElementById(
+                    "statusFilter"
+                )
+                .value;
+
+
+        const selectedDepartment =
+            document
+                .getElementById(
+                    "departmentFilter"
+                )
+                .value;
+
+
+        const filteredTickets =
+            tickets.filter(ticket => {
+
+                const status =
+                    ticket.status ||
+                    "Open";
+
+                const department =
+                    ticket.department ||
+                    ticket.category ||
+                    "";
+
+                const searchableText = [
+
+                    ticket.id,
+
+                    ticket.ticketId,
+
+                    ticket.studentName,
+
+                    ticket.student,
+
+                    ticket.email,
+
+                    ticket.subject,
+
+                    ticket.department,
+
+                    ticket.category,
+
+                    ticket.description
+
+                ]
+                    .filter(Boolean)
+                    .join(" ")
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    searchableText.includes(
+                        searchText
+                    );
+
+
+                const matchesStatus =
+                    selectedStatus === "" ||
+                    status === selectedStatus;
+
+
+                const matchesDepartment =
+                    selectedDepartment === "" ||
+                    department ===
+                        selectedDepartment;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus &&
+                    matchesDepartment
+                );
+
+            });
+
+
+        /* COUNT */
+
+        document.getElementById(
+            "ticketCount"
+        ).textContent =
+            filteredTickets.length;
+
+
+        /* TABLE */
+
+        const table =
+            document.getElementById(
+                "ticketTable"
+            );
+
+        table.innerHTML = "";
+
+
+        /* EMPTY */
+
+        if (
+            filteredTickets.length === 0
+        ) {
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        class="empty"
+                    >
+
+                        <div class="empty-icon">
+                            🎫
+                        </div>
+
+                        <strong>
+                            No tickets found
+                        </strong>
+
+                        <br>
+
+                        Create a ticket from
+                        the Student Chatbot first.
+
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        /* ROWS */
+
+        filteredTickets
+            .slice()
+            .reverse()
+            .forEach(ticket => {
+
+                const index =
+                    tickets.findIndex(
+                        item =>
+                            item.id ===
+                                ticket.id ||
+                            item.ticketId ===
+                                ticket.ticketId
+                    );
+
+
+                const status =
+                    ticket.status ||
+                    "Open";
+
+
+                const statusClass =
+                    getStatusClass(
+                        status
+                    );
+
+
+                let lastReplyHTML =
+                    "";
+
+
+                if (
+                    Array.isArray(
+                        ticket.replies
+                    ) &&
+                    ticket.replies.length > 0
+                ) {
+
+                    const last =
+                        ticket.replies[
+                            ticket.replies.length - 1
+                        ];
+
+
+                    lastReplyHTML = `
+
+                        <div class="last-reply">
+
+                            <strong>
+                                Last Reply:
+                            </strong>
+
+                            <br>
+
+                            ${escapeHTML(
+                                last.message || ""
+                            )}
+
+                            <br>
+
+                            <small>
+
+                                ${escapeHTML(
+                                    last.sender ||
+                                    "Admin"
+                                )}
+
+                                -
+
+                                ${escapeHTML(
+                                    last.date || ""
+                                )}
+
+                            </small>
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                const ticketId =
+                    ticket.id ||
+                    ticket.ticketId ||
+                    "-";
+
+
+                const studentName =
+                    ticket.studentName ||
+                    ticket.student ||
+                    "Student";
+
+
+                const email =
+                    ticket.email ||
+                    "-";
+
+
+                const subject =
+                    ticket.subject ||
+                    "Support Request";
+
+
+                const department =
+                    ticket.department ||
+                    ticket.category ||
+                    "-";
+
+
+                const description =
+                    ticket.description ||
+                    "-";
+
+
+                const assignedTo =
+                    ticket.assignedTo ||
+                    "";
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+
+                        <span class="ticket-id">
+
+                            ${escapeHTML(
+                                ticketId
+                            )}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHTML(
+                            studentName
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHTML(
+                            email
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <strong>
+
+                            ${escapeHTML(
+                                subject
+                            )}
+
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        ${escapeHTML(
+                            department
+                        )}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="description">
+
+                            ${escapeHTML(
+                                description
+                            )}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <select
+                            class="status-select"
+                            data-index="${index}"
+                        >
+
+                            <option
+                                value="Open"
+                                ${
+                                    status === "Open"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Open
+                            </option>
+
+                            <option
+                                value="Pending"
+                                ${
+                                    status === "Pending"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Pending
+                            </option>
+
+                            <option
+                                value="Resolved"
+                                ${
+                                    status === "Resolved"
+                                        ? "selected"
+                                        : ""
+                                }
+                            >
+                                Resolved
+                            </option>
+
+                        </select>
+
+                        <br>
+
+                        <span
+                            class="status-badge ${statusClass}"
+                        >
+                            ${escapeHTML(
+                                status
+                            )}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <input
+                            type="text"
+                            class="assign-input"
+                            data-index="${index}"
+                            value="${escapeHTML(
+                                assignedTo
+                            )}"
+                            placeholder="Assign staff"
+                        >
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="reply-area">
+
+                            <textarea
+                                class="reply-input"
+                                data-index="${index}"
+                                placeholder="Type reply to student..."
+                            ></textarea>
+
+
+                            <button
+                                type="button"
+                                class="reply-btn"
+                                data-index="${index}"
+                            >
+                                📩 Send Reply
+                            </button>
+
+                            ${lastReplyHTML}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="save-btn"
+                            data-index="${index}"
+                        >
+                            💾 Save
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+
+        /* STATUS EVENTS */
+
+        document
+            .querySelectorAll(
+                ".status-select"
+            )
+            .forEach(select => {
+
+                select.addEventListener(
+                    "change",
+                    function () {
+
+                        changeTicketStatus(
+                            Number(
+                                this.dataset.index
+                            ),
+                            this.value
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /* SAVE EVENTS */
+
+        document
+            .querySelectorAll(
+                ".save-btn"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        saveTicket(
+                            Number(
+                                this.dataset.index
+                            )
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /* REPLY EVENTS */
+
+        document
+            .querySelectorAll(
+                ".reply-btn"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        sendAdminReply(
+                            Number(
+                                this.dataset.index
+                            )
+                        );
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    /* ==========================================
+       CHANGE STATUS
+    ========================================== */
+
+    function changeTicketStatus(
+        index,
+        newStatus
+    ) {
+
+        const tickets =
+            getTickets();
+
+        const ticket =
+            tickets[index];
+
+
+        if (!ticket) {
+
+            showMessage(
+                "❌ Ticket not found.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const oldStatus =
+            ticket.status ||
+            "Open";
+
+
+        ticket.status =
+            newStatus;
+
+
+        ticket.updatedAt =
+            new Date().toLocaleString(
+                "en-IN"
+            );
+
+
+        saveTickets(
+            tickets
+        );
+
+
+        if (
+            oldStatus !==
+            newStatus
+        ) {
+
+            createStudentNotification(
+                ticket,
+                "🎫 Ticket Status Updated",
+                "Your ticket " +
+                    (
+                        ticket.id ||
+                        ticket.ticketId
+                    ) +
+                    " status has been changed from " +
+                    oldStatus +
+                    " to " +
+                    newStatus +
+                    "."
+            );
+
+        }
+
+
+        showMessage(
+            "✅ Status changed to " +
+                newStatus +
+                " successfully!"
+        );
+
+
+        updateStatusBadge(
+            index,
+            newStatus
+        );
+
+    }
+
+
+    /* ==========================================
+       UPDATE STATUS BADGE
+    ========================================== */
+
+    function updateStatusBadge(
+        index,
+        status
+    ) {
+
+        const selects =
+            document.querySelectorAll(
+                ".status-select"
+            );
+
+
+        selects.forEach(select => {
+
+            if (
+                Number(
+                    select.dataset.index
+                ) === index
+            ) {
+
+                const badge =
+                    select.parentElement
+                        .querySelector(
+                            ".status-badge"
+                        );
+
+
+                if (badge) {
+
+                    badge.textContent =
+                        status;
+
+                    badge.className =
+                        "status-badge " +
+                        getStatusClass(
+                            status
+                        );
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    /* ==========================================
+       SAVE TICKET
+    ========================================== */
+
+    function saveTicket(index) {
+
+        const tickets =
+            getTickets();
+
+        const ticket =
+            tickets[index];
+
+
+        if (!ticket) {
+
+            showMessage(
+                "❌ Ticket not found.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const statusElement =
+            document.querySelector(
+                '.status-select[data-index="' +
+                index +
+                '"]'
+            );
+
+
+        const assignElement =
+            document.querySelector(
+                '.assign-input[data-index="' +
+                index +
+                '"]'
+            );
+
+
+        if (!statusElement) {
+
+            showMessage(
+                "❌ Status field not found.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const oldStatus =
+            ticket.status ||
+            "Open";
+
+
+        const newStatus =
+            statusElement.value;
+
+
+        ticket.status =
+            newStatus;
+
+
+        ticket.assignedTo =
+            assignElement &&
+            assignElement.value.trim()
+                ? assignElement.value.trim()
+                : "Unassigned";
+
+
+        ticket.updatedAt =
+            new Date().toLocaleString(
+                "en-IN"
+            );
+
+
+        saveTickets(
+            tickets
+        );
+
+
+        if (
+            oldStatus !==
+            newStatus
+        ) {
+
+            createStudentNotification(
+                ticket,
+                "🎫 Ticket Status Updated",
+                "Your ticket " +
+                    (
+                        ticket.id ||
+                        ticket.ticketId
+                    ) +
+                    " status has been changed from " +
+                    oldStatus +
+                    " to " +
+                    newStatus +
+                    "."
+            );
+
+        }
+
+
+        showMessage(
+            "✅ Ticket saved successfully!"
+        );
+
+
+        updateStatusBadge(
+            index,
+            newStatus
+        );
+
+    }
+
+
+    /* ==========================================
+       ADMIN REPLY
+    ========================================== */
+
+    function sendAdminReply(index) {
+
+        const tickets =
+            getTickets();
+
+        const ticket =
+            tickets[index];
+
+
+        if (!ticket) {
+
+            showMessage(
+                "❌ Ticket not found.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        const textarea =
+            document.querySelector(
+                '.reply-input[data-index="' +
+                index +
+                '"]'
+            );
+
+
+        if (!textarea) {
+            return;
+        }
+
+
+        const reply =
+            textarea.value.trim();
+
+
+        if (!reply) {
+
+            showMessage(
+                "⚠️ Please type a reply first.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !Array.isArray(
+                ticket.replies
+            )
+        ) {
+
+            ticket.replies = [];
+
+        }
+
+
+        ticket.replies.push({
+
+            sender:
+                "Admin",
+
+            message:
+                reply,
+
+            date:
+                new Date().toLocaleString(
+                    "en-IN"
+                )
+
+        });
+
+
+        ticket.status =
+            "Pending";
+
+
+        ticket.updatedAt =
+            new Date().toLocaleString(
+                "en-IN"
+            );
+
+
+        saveTickets(
+            tickets
+        );
+
+
+        createStudentNotification(
+            ticket,
+            "💬 New Admin Reply",
+            "Admin replied to your ticket " +
+                (
+                    ticket.id ||
+                    ticket.ticketId
+                ) +
+                ": " +
+                reply
+        );
+
+
+        showMessage(
+            "📩 Reply sent successfully!"
+        );
+
+
+        loadTickets();
+
+    }
+
+
+    /* ==========================================
+       CLEAR FILTERS
+    ========================================== */
+
+    function clearFilters() {
+
+        document.getElementById(
+            "searchInput"
+        ).value = "";
+
+
+        document.getElementById(
+            "statusFilter"
+        ).value = "";
+
+
+        document.getElementById(
+            "departmentFilter"
+        ).value = "";
+
+
+        loadTickets();
+
+    }
+
+
+    /* ==========================================
+       SHOW MESSAGE
+    ========================================== */
+
+    function showMessage(
+        text,
+        isError = false
+    ) {
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        message.textContent =
+            text;
+
+
+        message.style.display =
+            "block";
+
+
+        if (isError) {
+
+            message.style.background =
+                "#fee2e2";
+
+            message.style.color =
+                "#991b1b";
+
+        } else {
+
+            message.style.background =
+                "#dcfce7";
+
+            message.style.color =
+                "#166534";
+
+        }
+
+
+        setTimeout(() => {
+
+            message.style.display =
+                "none";
+
+        }, 3000);
+
+    }
+
+
+    /* ==========================================
+       SEARCH
+    ========================================== */
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .addEventListener(
+            "input",
+            loadTickets
+        );
+
+
+    /* ==========================================
+       STATUS FILTER
+    ========================================== */
+
+    document
+        .getElementById(
+            "statusFilter"
+        )
+        .addEventListener(
+            "change",
+            loadTickets
+        );
+
+
+    /* ==========================================
+       DEPARTMENT FILTER
+    ========================================== */
+
+    document
+        .getElementById(
+            "departmentFilter"
+        )
+        .addEventListener(
+            "change",
+            loadTickets
+        );
+
+
+    /* ==========================================
+       CLEAR BUTTON
+    ========================================== */
+
+    document
+        .getElementById(
+            "clearBtn"
+        )
+        .addEventListener(
+            "click",
+            clearFilters
+        );
+
+
+    /* ==========================================
+       REFRESH BUTTON
+    ========================================== */
+
+    document
+        .getElementById(
+            "refreshBtn"
+        )
+        .addEventListener(
+            "click",
+            loadTickets
+        );
+
+
+    /* ==========================================
+       STORAGE SYNC
+    ========================================== */
+
+    window.addEventListener(
+        "storage",
+        function (event) {
+
+            if (
+                event.key === TICKET_KEY ||
+                event.key === NOTIFICATION_KEY
+            ) {
+
+                loadTickets();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       INITIAL LOAD
+    ========================================== */
+
+    loadTickets();
+
+</script>
+```
+
+</body>
+</html>
